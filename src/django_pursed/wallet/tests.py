@@ -1,5 +1,10 @@
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+
 from .test_utils import WalletTestCase
 from .errors import InsufficientBalance
+from .models import Wallet
 
 # Create your tests here.
 
@@ -97,3 +102,17 @@ class TransferTestCase(WalletTestCase):
 
         with self.assertRaises(InsufficientBalance):
             self.wallet.transfer(wallet2, TRANSFER_AMOUNT)
+
+
+class PermissionTestCase(WalletTestCase):
+
+    def test_no_permission(self):
+
+        content_type = ContentType.objects.get_for_model(Wallet)
+        permission = Permission.objects.get(content_type = content_type,
+                                            codename='operate')
+
+        self.user.user_permissions.remove(permission)
+
+        with self.assertRaises(PermissionDenied):
+            self.wallet.deposit(100)
