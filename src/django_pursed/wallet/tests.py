@@ -72,7 +72,7 @@ class TransferTestCase(WalletTestCase):
 
         # And now, we transfer all the balance the first
         # wallet has.
-        self.wallet.transfer(wallet2, TRANSFER_AMOUNT)
+        T1, T2 = self.wallet.transfer(wallet2, TRANSFER_AMOUNT)
 
         # We check that the first wallet has its balance
         self.assertEqual(self.wallet.current_balance,
@@ -81,6 +81,9 @@ class TransferTestCase(WalletTestCase):
         # We also check that the second wallet has the
         # transferred balance.
         self.assertEqual(wallet2.current_balance, TRANSFER_AMOUNT)
+
+        self.assertEqual(T2.related_object, self.wallet)
+        self.assertEqual(wallet2, T1.related_object)
 
     def test_transfer_insufficient_balance(self):
         """Test a scenario where a transfer is done on a
