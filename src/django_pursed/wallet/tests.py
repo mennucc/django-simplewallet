@@ -15,7 +15,8 @@ class DepositTestCase(WalletTestCase):
     def test_deposit(self):
         """Test the basic wallet deposit operation."""
         DEPOSIT = 100
-        self.wallet.deposit(DEPOSIT)
+        DESCRIPTION = 'First deposit'
+        T = self.wallet.deposit(DEPOSIT, description=DESCRIPTION)
 
         # The wallet's current_balance should also reflect
         # the deposit's value.
@@ -24,6 +25,8 @@ class DepositTestCase(WalletTestCase):
         # When I create a deposit, the wallet should create
         # a transaction equal to the value of the deposit.
         self.assertEqual(self.wallet.transaction_set.first().value, DEPOSIT)
+
+        self.assertEqual(DESCRIPTION, T.description)
 
 
 class WithdrawTestCase(WalletTestCase):
