@@ -31,14 +31,17 @@ class Wallet(models.Model):
 
         Also creates a new transaction with the deposit
         value.
+
+        Returns the transaction.
         """
-        self.transaction_set.create(
+        T = self.transaction_set.create(
             value=value,
             running_balance=self.current_balance + value,
             description = description,
         )
         self.current_balance += value
         self.save()
+        return T
 
     def withdraw(self, value, description=''):
         """Withdraw's a value from the wallet.
@@ -52,24 +55,30 @@ class Wallet(models.Model):
         inherits from :mod:`django.db.IntegrityError`. So
         that it automatically rolls-back during a
         transaction lifecycle.
+
+        Returns the transaction.
         """
         if value > self.current_balance:
             raise InsufficientBalance('This wallet has insufficient balance.')
 
-        self.transaction_set.create(
+        T = self.transaction_set.create(
             value=-value,
             running_balance=self.current_balance - value,
             description = description,
         )
         self.current_balance -= value
         self.save()
+        return T
 
     def transfer(self, wallet, value, description=''):
         """Transfers an value to another wallet.
         Uses `deposit` and `withdraw` internally.
+
+        Returns the two transactions, on the first and on the second wallet.
         """
-        self.withdraw(value, description)
-        wallet.deposit(value, description)
+        T1 = self.withdraw(value, description)
+        T2 = wallet.deposit(value, description)
+        return T1,T2
 
 
 class Transaction(models.Model):
