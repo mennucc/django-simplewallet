@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
+import os, sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -73,13 +73,21 @@ WSGI_APPLICATION = 'django_pursed.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
-import dj_database_url
-
-DATABASES = {
-    'default': dj_database_url.parse(os.environ['DATABASE_URL'])
-}
+if 'DATABASE_URL' in os.environ:
+    import dj_database_url
+    D = dj_database_url.parse(os.environ['DATABASE_URL'])
+    DATABASES = {
+        'default': D
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(os.path.dirname(sys.argv[0]),'var/sqlite_database'),
+        }
+    }
 
 
 # Password validation
