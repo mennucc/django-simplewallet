@@ -1,5 +1,5 @@
-from test_utils import WalletTestCase
-from errors import InsufficientBalance
+from .test_utils import WalletTestCase
+from .errors import InsufficientBalance
 
 # Create your tests here.
 
