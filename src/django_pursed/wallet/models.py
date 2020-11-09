@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from .errors import InsufficientBalance
 
@@ -99,6 +101,13 @@ class Transaction(models.Model):
     # The description of the transaction
     description = models.CharField(max_length=300, blank=True)
 
+    # An object associated to the description [2]
+    content_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True, default=None)
+    object_id = models.PositiveIntegerField(null=True, default=0)
+    related_object = GenericForeignKey('content_type', 'object_id')
+
+
 
 # Footnotes
 # [1]: https://docs.djangoproject.com/en/1.9/topics/auth/customizing/#referencing-the-user-model
+# [2]: https://docs.djangoproject.com/en/3.1/ref/contrib/contenttypes/#django.contrib.contenttypes.fields.GenericForeignKey
