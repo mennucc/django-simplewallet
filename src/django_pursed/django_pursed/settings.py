@@ -72,7 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_pursed.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
@@ -98,6 +97,33 @@ else:
         }
     }
 
+
+
+if False:
+    # This part is to set up this app in an existing MySQL. You may want to read
+    #  https://www.digitalocean.com/community/tutorials/how-to-create-a-django-app-and-connect-it-to-a-database
+    # to understand how to setup mysql for django;
+    # but look at 'test_mysql.sql' for the exact list of commands to insert into mysql for this to work
+    #
+    a = os.path.join(os.path.dirname(sys.argv[0]),'test_mysql.cnf')
+    assert os.path.isfile(a),a
+    #
+    ## https://docs.djangoproject.com/en/dev/ref/databases/#mysql-notes
+    ## older MySQL may prefer this, that is the Django recommended choice
+    D = {
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': { 'read_default_file': a, },
+          # idea from  https://stackoverflow.com/a/45131868/5058564
+        'TEST': { 'NAME': 'test_django_wallet', },
+        }
+    if False:
+        # recent MySQL, such as MySQL 8, prefer this
+        D['auth_plugin'] = 'mysql_native_password'
+        D['OPTIONS']['auth_plugin'] = 'mysql_native_password'
+        D['ENGINE'] = 'mysql.connector.django'
+    DATABASES = {
+        'default': D,
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

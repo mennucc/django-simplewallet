@@ -1,0 +1,5 @@
+[client]
+database = django_wallet
+user = django_wallet_user
+password = '603a7cdc47f0f963'
+default-character-set = utf8
