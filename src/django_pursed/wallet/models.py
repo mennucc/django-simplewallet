@@ -28,6 +28,9 @@ class Wallet(models.Model):
     # The date/time of the creation of this wallet.
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        permissions = [('operate','permission to deposit/withdraw')]
+
     def deposit(self, value, description='', related_object=None):
         """Deposits a value to the wallet.
 
