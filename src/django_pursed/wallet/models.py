@@ -28,7 +28,7 @@ class Wallet(models.Model):
     # The date/time of the creation of this wallet.
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def deposit(self, value, description=''):
+    def deposit(self, value, description='', related_object=None):
         """Deposits a value to the wallet.
 
         Also creates a new transaction with the deposit
@@ -40,12 +40,13 @@ class Wallet(models.Model):
             value=value,
             running_balance=self.current_balance + value,
             description = description,
+            related_object=related_object,
         )
         self.current_balance += value
         self.save()
         return T
 
-    def withdraw(self, value, description=''):
+    def withdraw(self, value, description='', related_object=None):
         """Withdraw's a value from the wallet.
 
         Also creates a new transaction with the withdraw
@@ -67,6 +68,7 @@ class Wallet(models.Model):
             value=-value,
             running_balance=self.current_balance - value,
             description = description,
+            related_object=related_object,
         )
         self.current_balance -= value
         self.save()
@@ -78,8 +80,8 @@ class Wallet(models.Model):
 
         Returns the two transactions, on the first and on the second wallet.
         """
-        T1 = self.withdraw(value, description)
-        T2 = wallet.deposit(value, description)
+        T1 = self.withdraw(value, description, wallet)
+        T2 = wallet.deposit(value, description, self)
         return T1,T2
 
 
