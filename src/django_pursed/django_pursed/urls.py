@@ -14,9 +14,33 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import url
+
+from django.urls import path, include
 from django.contrib import admin
 
+from .views import buy, bought
+
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
+    path('buy.html', buy, name='buy'),
+    path('bought.html', bought, name='bought'),
+    path('wallet/', include('wallet.urls')),
 ]
+
+
+#### login, logout
+
+from django.contrib.auth.views import LoginView, LogoutView
+
+urlpatterns += [
+    path('accounts/login/',  LoginView.as_view(template_name='admin/login.html',
+                                               extra_context={
+                                                   'title': 'Login',
+                                                   'site_title': 'Django Pursed test site',
+                                                   'site_header':  'Django Pursed test site : Login'
+                                               },),
+         name="my_login", ),
+    path('accounts/logout/', LogoutView.as_view(), name="my_logout"),
+    ]
+
+

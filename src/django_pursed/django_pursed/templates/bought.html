@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Result of purchase {% endblock %}
+
+{% block content %}
+
+Result was {{ result }}.
+
+Now your wallet contains {{ wallet.current_balance }} {{ currency_name }}.
+
+{% endblock %}
