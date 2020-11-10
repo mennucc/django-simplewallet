@@ -136,3 +136,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+#### django_pursed specific settings
+
+## field for storing value
+# WALLET_CURRENCY_STORE_FIELD = models.BigIntegerField
+
+## name of currency
+# WALLET_CURRENCY_NAME = 'coins'
+
+## if utils.get_wallet_or_create() will create a wallet for the user when the user hasn't it
+# WALLET_CREATE_WALLET = True
