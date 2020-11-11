@@ -75,9 +75,17 @@ WSGI_APPLICATION = 'django_pursed.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
-if 'DATABASE_URL' in os.environ:
+if 'DOCKER_DATABASE_URL' in os.environ:
+    # this is used inside the docker instance
     import dj_database_url
-    D = dj_database_url.parse(os.environ['DATABASE_URL'])
+    D = dj_database_url.parse(os.environ['DOCKER_DATABASE_URL'])
+    V = int(os.environ.get('DOCKER_DATABASE_VERSION','5'))
+    if V > 5:
+        ## if you prefer to use the connector
+        # https://dev.mysql.com/doc/connector-python/en/
+        O=D.get('OPTIONS',{})
+        O['auth_plugin'] = 'mysql_native_password'
+        D['ENGINE'] = 'mysql.connector.django'
     DATABASES = {
         'default': D
     }

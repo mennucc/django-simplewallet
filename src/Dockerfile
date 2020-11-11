@@ -1,4 +1,10 @@
-FROM python:2.7
+FROM python:3
+ENV PYTHONUNBUFFERED=1
+RUN mkdir /src
+WORKDIR /src
+COPY . /src/
+RUN pip3 install -r requirements.txt
 
-ADD requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
+
+
+

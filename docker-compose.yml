@@ -1,19 +1,31 @@
-mysql:
-  image: mysql
-  volumes:
-    - ./db/mysql:/var/lib/mysql
-  environment:
-    MYSQL_ROOT_PASSWORD: root
-    MYSQL_DATABASE: pursed
+version: '3'
 
-app:
-  build: src/
-  volumes:
-    - ./src:/opt/app
-  working_dir: /opt/app/django_pursed/
-  links:
-    - mysql:mysql
-  ports:
-    - 3000:3000
-  environment:
-    DATABASE_URL: mysql://root:root@mysql/pursed
+services:
+  mysql:
+    image: mysql:5
+    volumes:
+      - mysql5_data:/var/lib/mysql
+      - mysql5_run:/var/run/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: verjbramn3
+      MYSQL_DATABASE: pursed
+
+  app:
+    depends_on:
+      - mysql
+    build: src/
+    image: djangopursed
+    working_dir: /src
+    volumes:
+      - mysql5_run:/var/run/mysql
+    ports:
+      - "8000:8000"
+    environment:
+      DOCKER_DATABASE_VERSION: 5
+      DOCKER_DATABASE_URL: mysql://root:verjbramn3@mysql/pursed
+    command: ./run.sh
+
+
+volumes:
+  mysql5_data:
+  mysql5_run:
