@@ -23,8 +23,7 @@ CURRENCY_STORE_FIELD = getattr(settings,
         'WALLET_CURRENCY_STORE_FIELD', models.BigIntegerField)
 
 # you can specify a name for your currency
-currency_name = getattr(settings,
-        'WALLET_CURRENCY_NAME', 'coins')
+currency_name_ = getattr(settings, 'WALLET_CURRENCY_NAME', 'coins')
 
 ########################## forms
 
@@ -57,6 +56,7 @@ def authorize_purchase_url(request, encoded):
         raise SuspiciousOperation('Is POST')
     if not request.user.has_perm('wallet.operate'):
         raise SuspiciousOperation('Cannot operate on wallet')
+    currency_name = currency_name_
     wallet = get_wallet_or_create(request.user)
     purchase_amount, description, pickled_function, redirect_ok, redirect_fails =  signing.loads(encoded)
     D = purchase_as_dict(purchase_amount, description, pickled_function, redirect_ok, redirect_fails)
@@ -72,6 +72,7 @@ def authorize_purchase_post(request):
         raise SuspiciousOperation('Is not POST')
     if not request.user.has_perm('wallet.operate'):
         raise SuspiciousOperation('Cannot operate on wallet')
+    currency_name = currency_name_
     wallet = get_wallet_or_create(request.user)
     purchaseform = PurchaseForm(request.POST)
     if not purchaseform.is_valid():
@@ -85,6 +86,7 @@ def purchase(request):
         raise SuspiciousOperation('Is not POST')
     if not request.user.has_perm('wallet.operate'):
         raise SuspiciousOperation('Cannot operate on wallet')
+    currency_name = currency_name_
     purchaseform = PurchaseForm(request.POST)
     if not purchaseform.is_valid():
         raise SuspiciousOperation('Invalid form')
