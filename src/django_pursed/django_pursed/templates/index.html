@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Main page {% endblock %}
+
+{% block content %}
+
+<h1>Django_pursed test pages</h1>
+
+<h2>Buy</h2>
+
+<form action="buy.html" method="post" class="border">
+    {% csrf_token %}
+    <table class="border">
+    {{ chooseform.as_table }}
+    </table>
+    <input type="submit" value="Buy">
+</form>
+
+<h2>Tools</h2>
+
+<a href="{% url 'wallet:show' %}" class="btn btn-outline-primary btn-sm p-1 m-1">
+ View wallet
+</a>
+
+{% endblock %}

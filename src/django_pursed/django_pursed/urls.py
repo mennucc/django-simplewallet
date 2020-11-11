@@ -18,10 +18,14 @@ Including another URLconf
 from django.urls import path, include
 from django.contrib import admin
 
-from .views import buy, bought
+from .views import index, buy, bought
+
+app_name = 'django_pursed'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', index),
+    path('index.html', index, name='index'),
     path('buy.html', buy, name='buy'),
     path('bought.html', bought, name='bought'),
     path('wallet/', include('wallet.urls')),

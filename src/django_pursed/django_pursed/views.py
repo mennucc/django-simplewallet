@@ -8,8 +8,20 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse
 from django.urls.exceptions import NoReverseMatch, Resolver404
 from django.conf import settings
+from django import forms
 
 from .models import BuyableObject
+
+class ChooseForm(forms.Form):
+    description = forms.CharField(label='description',
+                                  max_length=300,
+                                  help_text='Name of the object that you want to buy')
+
+def index(request):
+    if not request.user.is_authenticated:
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+    chooseform = ChooseForm()
+    return render(request, 'index.html', locals())
 
 class Buy(object):
     def __init__(self, buyable, user):
@@ -29,7 +41,13 @@ def buy(request):
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
     #
-    description = request.GET.get('description','refrigerator')
+    if request.method != 'POST' :
+        description = request.GET.get('description','refrigerator')
+    else:
+        chooseform = ChooseForm(request.POST)
+        if not chooseform.is_valid():
+            raise SuspiciousOperation('Invalid form')
+        description = chooseform.cleaned_data['description']
     try:
         buyable = BuyableObject.objects.filter(description = description).get()
     except BuyableObject.DoesNotExist:
