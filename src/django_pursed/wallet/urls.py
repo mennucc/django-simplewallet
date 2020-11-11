@@ -8,4 +8,5 @@ urlpatterns = [
     path('authorize_purchase_post', views.authorize_purchase_post, name='authorize_purchase_post'),
     path('authorize_purchase_url/<str:encoded>', views.authorize_purchase_url, name='authorize_purchase_url'),
     path('purchase', views.purchase, name='purchase'),
+    path('show', views.show, name='show'),
 ]

@@ -31,6 +31,7 @@ class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = ['value', 'description']
+    at_time = forms.CharField()
 
 class PurchaseForm(forms.Form):
     purchase_amount = forms.CharField(help_text='Amount to be paid')
@@ -50,6 +51,18 @@ from .utils import *
 
 ################### views
 
+def show(request):
+    if not request.user.is_authenticated:
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+    if not request.user.has_perm('wallet.view_wallet'):
+        return HttpResponse('No viewing permission', status=http.HTTPStatus.BAD_REQUEST)
+    wallet = get_wallet_or_create(request.user)
+    currency_name = currency_name_
+    transactions = []
+    for j in Transaction.objects.filter(wallet=wallet).all():
+        t=TransactionForm(instance=j,initial={'at_time':str(j.created_at)})
+        transactions.append(t)
+    return render(request, 'show.html', locals() )
 
 def authorize_purchase_url(request, encoded):
     if request.method == 'POST' :

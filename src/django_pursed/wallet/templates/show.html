@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Show wallet balance and transactions{% endblock %}
+
+{% block content %}
+
+<h1>Your wallet</h1>
+
+<h2>Balance</h2>
+
+<div class="border">Your wallet currently contains {{ wallet.current_balance }} {{ currency_name }}.</div>
+
+<h2>Transactions</h2>
+<ul>
+{% for val in transactions %}
+<li> <table class="border">{{ val }}</table> </li>
+{% endfor %}
+</ul>
+
+{% endblock %}
