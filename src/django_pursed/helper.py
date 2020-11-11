@@ -66,6 +66,9 @@ def create_fake_users():
         permission = Permission.objects.get(content_type = content_type,
                                             codename='operate')
         user.user_permissions.add(permission)
+        permission = Permission.objects.get(content_type = content_type,
+                                            codename='view_wallet')
+        user.user_permissions.add(permission)
 
     #
     for U,P in ("caesar",  "julius"), :
