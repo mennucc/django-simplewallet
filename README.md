@@ -20,6 +20,15 @@ Run the project!
 $ docker-compose up
 ```
 
+Connect to `localhost:8000` , authenticate with username `foobar` and password `barfoo`,
+and buy an object.
+
+### Structure
+
+The project is divided in two apps. The most important is `wallet` that manages wallets.
+The app `django_pursed` implements a simple shop where the user can buy objects;
+its code can be used and adapted to your needs.
+
 ### Creating a New Wallet
 
 A wallet is owned by a user. Should you be using a custom
