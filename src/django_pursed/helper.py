@@ -6,11 +6,31 @@ This program does some actions that `manage` does not. Possible commands:
     create_fake_users
         creates some fake users, to interact with the Django site
 
+    deposit [user] [amount]
 
 Use `command` --help for command specific options.
 """
 
 import os, sys, argparse, json
+
+
+def deposit(username, amount):
+    from django.db.utils import IntegrityError
+    from django.db import transaction
+    from django.contrib.contenttypes.models import ContentType
+    from django.contrib.auth.models import Permission
+    import django.contrib.auth as A
+    #
+    from wallet.utils import  get_wallet_or_create
+    from wallet.models import Wallet
+    content_type = ContentType.objects.get_for_model(Wallet)
+    #
+    UsMo = A.get_user_model()
+    user = UsMo.objects.filter(username=username).get()
+    wallet = get_wallet_or_create(user)
+    with transaction.atomic():
+        wallet.deposit(value=float(amount),description='deposit from command line')
+
 
 def _build_fake_email(e):
     from django.conf import settings
@@ -73,6 +93,8 @@ def main(argv):
     django.setup()
     if argv[0] == 'create_fake_users':
         return create_fake_users()
+    elif argv[0] == 'deposit':
+        return deposit(argv[1],argv[2])
     else:
         sys.stderr.write("command not recognized : %r\n" % (argv,))
         sys.stderr.write(__doc__%{'arg0':sys.argv[0]})
