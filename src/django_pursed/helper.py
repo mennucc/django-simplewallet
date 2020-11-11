@@ -24,17 +24,29 @@ def _build_fake_email(e):
 
 def create_fake_users():
     from django.db.utils import IntegrityError
+    from django.contrib.contenttypes.models import ContentType
+    from django.contrib.auth.models import Permission
     import django.contrib.auth as A
+    #
+    from wallet.models import Wallet
+    content_type = ContentType.objects.get_for_model(Wallet)
+    #
     UsMo = A.get_user_model()
     for U,P in ('foobar', 'barfoo'), ('jsmith',"123456"), :
         E=_build_fake_email(U)
-        print('*** creating user %r password %r' % (U,P))
+        print('*** creating user %r password %r with "operate" permission' % (U,P))
         try:
             UsMo.objects.create_user(U,email=E,password=P).save()
         except IntegrityError:
             pass
         except Exception as e:
             print('Cannot create user %r : %r' %(U,e))
+        #
+        user = UsMo.objects.filter(username=U).get()
+        permission = Permission.objects.get(content_type = content_type,
+                                            codename='operate')
+        user.user_permissions.add(permission)
+
     #
     for U,P in ("caesar",  "julius"), :
         print('*** creating superuser %r password %r' % (U,P))
