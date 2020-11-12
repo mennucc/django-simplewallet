@@ -48,13 +48,10 @@ def create_fake_users():
     from django.contrib.auth.models import Permission
     import django.contrib.auth as A
     #
-    from wallet.models import Wallet
-    content_type = ContentType.objects.get_for_model(Wallet)
-    #
     UsMo = A.get_user_model()
     for U,P in ('foobar', 'barfoo'), ('jsmith',"123456"), :
         E=_build_fake_email(U)
-        print('*** creating user %r password %r with "operate" permission' % (U,P))
+        print('*** creating user %r password %r' % (U,P))
         try:
             UsMo.objects.create_user(U,email=E,password=P).save()
         except IntegrityError:
@@ -62,14 +59,21 @@ def create_fake_users():
         except Exception as e:
             print('Cannot create user %r : %r' %(U,e))
         #
+    from wallet.models import Wallet, Transaction
+    wallet_content_type = ContentType.objects.get_for_model(Wallet)
+    transaction_content_type = ContentType.objects.get_for_model(Transaction)
+    for U in  'foobar', :
         user = UsMo.objects.filter(username=U).get()
-        permission = Permission.objects.get(content_type = content_type,
+        print('*** adding permissions to user %r: "operate", "view_wallet" and "view_transaction"' % (U,))
+        permission = Permission.objects.get(content_type = wallet_content_type,
                                             codename='operate')
         user.user_permissions.add(permission)
-        permission = Permission.objects.get(content_type = content_type,
+        permission = Permission.objects.get(content_type = wallet_content_type,
                                             codename='view_wallet')
         user.user_permissions.add(permission)
-
+        permission = Permission.objects.get(content_type = transaction_content_type,
+                                            codename='view_transaction')
+        user.user_permissions.add(permission)
     #
     for U,P in ("caesar",  "julius"), :
         print('*** creating superuser %r password %r' % (U,P))
