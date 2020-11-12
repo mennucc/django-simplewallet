@@ -12,10 +12,14 @@
 <div class="border">Your wallet currently contains {{ wallet.current_balance }} {{ currency_name }}.</div>
 
 <h2>Transactions</h2>
-<ul>
-{% for val in transactions %}
-<li> <table class="border">{{ val }}</table> </li>
-{% endfor %}
-</ul>
+{% if perms.wallet.view_transaction %}
+ <ul>
+ {% for val in transactions %}
+ <li> <table class="border">{{ val }}</table> </li>
+ {% endfor %}
+ </ul>
+{% else %}
+<div class="alert alert-warning" role="alert">Permission denied</div>
+{% endif %}
 
 {% endblock %}
