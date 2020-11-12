@@ -12,6 +12,8 @@ from django import forms
 
 from .models import BuyableObject
 
+from wallet.errors import StopPurchase
+
 class ChooseForm(forms.Form):
     description = forms.CharField(label='description',
                                   max_length=300,
@@ -31,7 +33,7 @@ class Buy(object):
     #
     def __call__(self, *v,**k):
         if self.buyable.owners.filter(username=self.user.username).exists():
-            raise Exception( 'User %r already owns %r' % (self.user, self.buyable, ) )
+            raise StopPurchase( 'User %r already owns %r' % (self.user, self.buyable, ) )
         self.buyable.owners.add(self.user)
         D = { 'return_code' : True,
               'related_object' : self.buyable ,

@@ -14,6 +14,7 @@ from django.core import signing
 
 from .models import Wallet, Transaction
 
+from .errors import StopPurchase
 
 # We'll be using BigIntegerField by default instead
 # of DecimalField for simplicity. This can be configured
@@ -131,7 +132,10 @@ def purchase(request):
             related_object = z.get('related_object')
             if ret is True:
                 wallet.withdraw(value=value, description=description, related_object=related_object)
+    except StopPurchase as e:
+        ret = str(e)
     except Exception as e:
+        logger.exception('While running buying function : %r',ex)
         ret = str(e)
     #
     if ret is True:

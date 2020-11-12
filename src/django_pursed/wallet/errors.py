@@ -9,3 +9,12 @@ class InsufficientBalance(IntegrityError):
     so that it is automatically rolled-back during django's
     transaction lifecycle.
     """
+
+class StopPurchase(IntegrityError):
+    """Raised when the buying function detects that it does not want
+    to buy this object.
+
+    We're subclassing from :mod:`django.db.IntegrityError`
+    so that it is automatically rolled-back during django's
+    transaction lifecycle.
+    """
