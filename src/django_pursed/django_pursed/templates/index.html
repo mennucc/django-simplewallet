@@ -9,13 +9,19 @@
 
 <h2>Buy</h2>
 
-<form action="buy.html" method="post" class="border">
+{% if chooseform %}
+<form action="{% url 'buy' %}" method="post" class="border">
     {% csrf_token %}
     <table class="border">
     {{ chooseform.as_table }}
     </table>
     <input type="submit" value="Buy">
 </form>
+{% else %}
+<a href="{% url 'my_login' %}?next=/" class="btn btn-outline-primary btn-sm">
+  Please login.
+</a>
+{% endif %}
 
 <h2>Tools</h2>
 

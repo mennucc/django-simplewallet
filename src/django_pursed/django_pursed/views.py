@@ -19,8 +19,9 @@ class ChooseForm(forms.Form):
 
 def index(request):
     if not request.user.is_authenticated:
-        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-    chooseform = ChooseForm()
+        chooseform = None
+    else:
+        chooseform = ChooseForm()
     return render(request, 'index.html', locals())
 
 class Buy(object):
