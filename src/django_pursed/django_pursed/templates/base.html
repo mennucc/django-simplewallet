@@ -27,11 +27,11 @@
         </a>
 	<div class="dropdown-menu" aria-labelledby="navbarDropdown">
  	  <a class="dropdown-item" href="{% url 'wallet:show' %}">Wallet</a>
-          <a class="nav-link" href="/accounts/logout">Logout. </a>
+          <a class="nav-link" href="{% url 'my_logout' %}">Logout. </a>
 	</div>
 	{% else %} {# user.is_authenticated #}
       <li class="nav-item active">
-      <a class="nav-link" href="/accounts/login?next={{request.path}}"> 😑  Login. </a>
+      <a class="nav-link" href="{% url 'my_login' %}?next={{request.path}}"> 😑  Login. </a>
       </li>
     {% endif %} {# user.is_authenticated #}
      </ul>
