@@ -1,4 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
+echo Waiting for mysql
+while ! python3 django_pursed/helper.py ping ; do
+    sleep 2
+done
 
 echo Running migrations
 python3 django_pursed/manage.py migrate
