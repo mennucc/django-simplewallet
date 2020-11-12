@@ -8,11 +8,53 @@ This program does some actions that `manage` does not. Possible commands:
 
     deposit [user] [amount]
 
+    ping
+        check if database is up and running
+
 Use `command` --help for command specific options.
 """
 
 import os, sys, argparse, json
 
+## from https://github.com/mozilla-services/python-dockerflow/blob/master/src/dockerflow/django/checks.py
+def check_database_connected():
+    """
+    A Django check to see if connecting to the configured default
+    database backend succeeds.
+    """
+
+    from django.core.exceptions import ImproperlyConfigured
+    from django.db import connection
+    from django.db.utils import OperationalError, ProgrammingError
+
+    msg = None
+
+    try:
+        connection.ensure_connection()
+    except OperationalError as e:
+        msg = "Could not connect to database: {!s}".format(e)
+    except ImproperlyConfigured as e:
+        msg = 'Datbase misconfigured: "{!s}"'.format(e)
+    else:
+        if not connection.is_usable():
+            msg = "Database connection is not usable"
+
+    return msg
+
+def ping():
+    from django.db import connection
+    from django.db.utils import OperationalError
+    # https://stackoverflow.com/a/32109155/5058564
+    #db_conn = connections['default']
+    msg = None
+    try:
+        msg = check_database_connected()
+        connected = connection.ensure_connection()
+    except Exception as e:
+        msg = str(e)
+    if msg is not None:
+        print('Connection fails: '+str(msg))
+    return msg is None
 
 def deposit(username, amount):
     from django.db.utils import IntegrityError
@@ -30,6 +72,7 @@ def deposit(username, amount):
     wallet = get_wallet_or_create(user)
     with transaction.atomic():
         wallet.deposit(value=float(amount),description='deposit from command line')
+    return True
 
 
 def _build_fake_email(e):
@@ -100,6 +143,8 @@ def main(argv):
     django.setup()
     if argv[0] == 'create_fake_users':
         return create_fake_users()
+    elif argv[0] == 'ping':
+        return ping()
     elif argv[0] == 'deposit':
         return deposit(argv[1],argv[2])
     else:
