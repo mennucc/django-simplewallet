@@ -12,6 +12,33 @@
   </head>
   <body>
 
+    <header>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/">
+  {% block navbarbrand %}Django Pursed{% endblock %}
+  </a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav">
+   	{% if user.is_authenticated %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span data-toggle="tooltip" title="Succesfully logged in">  😀 </span>
+	  {{ user.get_username }} 
+        </a>
+	<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+ 	  <a class="dropdown-item" href="{% url 'wallet:show' %}">Wallet</a>
+          <a class="nav-link" href="/accounts/logout">Logout. </a>
+	</div>
+	{% else %} {# user.is_authenticated #}
+      <li class="nav-item active">
+      <a class="nav-link" href="/accounts/login?next={{request.path}}"> 😑  Login. </a>
+      </li>
+    {% endif %} {# user.is_authenticated #}
+     </ul>
+  </div>
+</nav>
+</header>
+
 
 {% if messages %}
 <div class="alert alert-primary" role="alert">
