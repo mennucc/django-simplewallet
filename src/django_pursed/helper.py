@@ -6,7 +6,8 @@ This program does some actions that `manage` does not. Possible commands:
     create_fake_users
         creates some fake users, to interact with the Django site
 
-    deposit [user] [amount]
+    deposit [--username username] [--email email] [--group group] [--amount amount]
+        deposit `amount` to either an user (identified by `username` or `email`), or all users in a group
 
     ping
         check if database is up and running
@@ -59,24 +60,6 @@ def ping():
     if msg is not None:
         print('Connection fails: '+str(msg))
     return msg is None
-
-def deposit(username, amount):
-    from django.db.utils import IntegrityError
-    from django.db import transaction
-    from django.contrib.contenttypes.models import ContentType
-    from django.contrib.auth.models import Permission
-    import django.contrib.auth as A
-    #
-    from wallet.utils import  get_wallet_or_create
-    from wallet.models import Wallet
-    content_type = ContentType.objects.get_for_model(Wallet)
-    #
-    UsMo = A.get_user_model()
-    user = UsMo.objects.filter(username=username).get()
-    wallet = get_wallet_or_create(user)
-    with transaction.atomic():
-        wallet.deposit(value=float(amount),description='deposit from command line')
-    return True
 
 
 def _build_fake_email(e):
@@ -139,6 +122,17 @@ def main(argv):
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('command', help='specific command',nargs='+')
+    #
+    if 'deposit' in argv:
+        parser.add_argument('--amount',type=float,required=True,\
+                            help='amount to deposit')
+        parser.add_argument('--username',type=str,\
+                            help='username receiving the deposit')
+        parser.add_argument('--email',type=str,\
+                            help='email of user receiving the deposit')
+        parser.add_argument('--group',type=str,\
+                            help='group of users receiving the deposit')
+    #
     args = parser.parse_args()
     argv = args.command
     #
@@ -150,7 +144,8 @@ def main(argv):
     elif argv[0] == 'ping':
         return ping()
     elif argv[0] == 'deposit':
-        return deposit(argv[1],argv[2])
+        from wallet.utils import deposit
+        return deposit(args.amount, username=args.username, email=args.email, group=args.group)
     else:
         sys.stderr.write("command not recognized : %r\n" % (argv,))
         sys.stderr.write(__doc__%{'arg0':sys.argv[0]})

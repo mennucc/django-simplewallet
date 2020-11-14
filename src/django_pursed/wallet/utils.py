@@ -60,3 +60,43 @@ def get_wallet_or_create(user):
         else:
             raise
     return wallet
+
+
+def deposit(amount, username=None, email=None, group=None):
+    "deposit `amount` to either an user (identified by `username` or `email`), or all users in a group"
+    from django.db.utils import IntegrityError
+    from django.db import transaction
+    from django.contrib.contenttypes.models import ContentType
+    from django.contrib.auth.models import Permission, Group
+    import django.contrib.auth as A
+    #
+    if not (username or email or group):
+        logger.warning('Please specify (--username or --email) or (--group)')
+        return False
+    if bool(username or email)  != bool(not group):
+        # it actually works, but it is weird
+        logger.warning('Please specify (--username or --email) or (--group) but not both')
+        return False
+    #
+    content_type = ContentType.objects.get_for_model(Wallet)
+    #
+    UsMo = A.get_user_model()
+    #
+    if username or email:
+        O = UsMo.objects
+        if username: O=O.filter(username=username)
+        if email: O=O.filter(email=email)
+        user = O.get()
+        wallet = get_wallet_or_create(user)
+        with transaction.atomic():
+            wallet.deposit(value=float(amount),description='deposit from command line')
+    #
+    if group:
+        group = Group.objects.get(name=group)
+        users = group.user_set.all()
+        with transaction.atomic():
+            for user in users:
+                wallet = get_wallet_or_create(user)
+                wallet.deposit(value=float(amount),description='deposit from command line')
+    return True
+
