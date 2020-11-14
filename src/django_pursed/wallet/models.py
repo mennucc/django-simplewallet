@@ -1,3 +1,8 @@
+
+import logging
+logger = logging.getLogger(__name__)
+
+
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -40,6 +45,7 @@ class Wallet(models.Model):
 
         Returns the transaction.
         """
+        logger.debug("User %r wallet %r  deposit amount %r", self.user, self, value)
         if not self.user.has_perm('wallet.operate'):
             raise PermissionDenied('User %r has no `operate` permission for wallet %r' %(self.user, self))
 
@@ -68,6 +74,7 @@ class Wallet(models.Model):
 
         Returns the transaction.
         """
+        logger.debug("User %r wallet %r  withdraw amount %r", self.user, self, value)
         if not self.user.has_perm('wallet.operate'):
             raise PermissionDenied('User %r has no `operate` permission for wallet %r' %(self.user, self))
 
@@ -90,6 +97,7 @@ class Wallet(models.Model):
 
         Returns the two transactions, on the first and on the second wallet.
         """
+        logger.debug("User %r wallet %r  start transfer for amount %r", self.user, self, value)
         if not self.user.has_perm('wallet.operate'):
             raise PermissionDenied('User %r has no `operate` permission for wallet %r' %(self.user, self))
 
