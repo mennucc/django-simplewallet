@@ -62,8 +62,9 @@ def get_wallet_or_create(user):
     return wallet
 
 
-def deposit(amount, username=None, email=None, group=None):
-    "deposit `amount` to either an user (identified by `username` or `email`), or all users in a group"
+###################### wallet operation helper
+
+def _wallet_helper_(functor, username=None, email=None, group=None):
     from django.db.utils import IntegrityError
     from django.db import transaction
     from django.contrib.contenttypes.models import ContentType
@@ -89,7 +90,7 @@ def deposit(amount, username=None, email=None, group=None):
         user = O.get()
         wallet = get_wallet_or_create(user)
         with transaction.atomic():
-            wallet.deposit(value=float(amount),description='deposit from command line')
+            functor(wallet)
     #
     if group:
         group = Group.objects.get(name=group)
@@ -97,6 +98,13 @@ def deposit(amount, username=None, email=None, group=None):
         with transaction.atomic():
             for user in users:
                 wallet = get_wallet_or_create(user)
-                wallet.deposit(value=float(amount),description='deposit from command line')
+                functor(wallet)
     return True
+
+
+def deposit(amount, username=None, email=None, group=None):
+    "deposit `amount` to either an user (identified by `username` or `email`), or all users in a group"
+    def functor(wallet, *v, **k):
+        return wallet.deposit(value=amount, description='deposit from command line', *v, **k)
+    return _wallet_helper_(functor, username=username, email=email, group=group)
 
