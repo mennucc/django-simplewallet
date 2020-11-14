@@ -16,6 +16,10 @@ Use `command` --help for command specific options.
 
 import os, sys, argparse, json
 
+import logging
+logger = logging.getLogger('helper')
+
+
 ## from https://github.com/mozilla-services/python-dockerflow/blob/master/src/dockerflow/django/checks.py
 def check_database_connected():
     """
