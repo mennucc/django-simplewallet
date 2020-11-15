@@ -55,6 +55,14 @@ and operations are protected by transactions.
 
 These functions can also be accessed from command line, using the `helper` script.
 
+### Permissions
+
+To withdraw/deposit on a wallet, the user must have the `operate` permission.
+
+To transfer between wallets, both the sending and receiving user must have `operate`
+permission.
+
+
 ### Despositing a balance to a wallet
 
 ```python
