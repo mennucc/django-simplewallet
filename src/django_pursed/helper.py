@@ -78,12 +78,16 @@ def create_fake_users():
     from django.contrib.auth.models import Permission
     import django.contrib.auth as A
     #
+    users_map = {}
+    #
     UsMo = A.get_user_model()
     for U,P in ('foobar', 'barfoo'), ('jsmith',"123456"), :
         E=_build_fake_email(U)
         print('*** creating user %r password %r' % (U,P))
         try:
-            UsMo.objects.create_user(U,email=E,password=P).save()
+            user = UsMo.objects.create_user(U,email=E,password=P)
+            user.save()
+            users_map[U] = user
         except IntegrityError:
             pass
         except Exception as e:
@@ -109,12 +113,14 @@ def create_fake_users():
         print('*** creating superuser %r password %r' % (U,P))
         E=_build_fake_email(U)
         try:
-            UsMo.objects.create_superuser(U,email=E,password=P).save()
+            user = UsMo.objects.create_superuser(U,email=E,password=P)
+            user.save()
+            users_map[U] = user
         except IntegrityError:
             pass
         except Exception as e:
             print('Cannot create user %r  : %r' %(U,e))
-    return True
+    return users_map
 
 
 def main(argv):
