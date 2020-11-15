@@ -131,12 +131,7 @@ def create_fake_users():
     return users_map
 
 
-def main(argv):
-    #
-    parser = argparse.ArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('command', help='specific command',nargs='+')
-    #
+def parser_add_arguments(parser, argv):
     if 'deposit' in argv or 'withdraw' in argv or 'transfer' in argv:
         parser.add_argument('--amount',type=float,required=True,\
                             help='amount')
@@ -152,30 +147,40 @@ def main(argv):
                             help='username to withdraw from')
         parser.add_argument('--from-email',type=str,\
                             help='email of user to withdraw from')
-    #
+
+
+def main(argv):
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('command', help='specific command',nargs='+')
+    parser_add_arguments(parser, argv)
     args = parser.parse_args()
     argv = args.command
     #
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_pursed.settings')
     import django
     django.setup()
+    from wallet import utils
+    ret = main_call(utils, argv, args)
+    if ret is None:
+        sys.stderr.write("command not recognized : %r\n" % (argv,))
+        sys.stderr.write(__doc__%{'arg0':sys.argv[0]})
+    return ret
+
+
+def main_call(utils, argv, args):
     if argv[0] == 'create_fake_users':
         return create_fake_users()
     elif argv[0] == 'ping':
         return ping()
     elif argv[0] == 'deposit':
-        from wallet.utils import deposit
-        return deposit(args.amount, username=args.username, email=args.email, group=args.group)
+        return utils.deposit(args.amount, username=args.username, email=args.email, group=args.group)
     elif argv[0] == 'transfer':
-        from wallet.utils import transfer
-        return transfer(args.amount, from_username=args.from_username, from_email=args.from_email, username=args.username, email=args.email, group=args.group)
+        return utils.transfer(args.amount, from_username=args.from_username, from_email=args.from_email, username=args.username, email=args.email, group=args.group)
     elif argv[0] == 'withdraw':
-        from wallet.utils import withdraw
-        return withdraw(args.amount, from_username=args.from_username, from_email=args.from_email)
+        return utils.withdraw(args.amount, from_username=args.from_username, from_email=args.from_email)
     else:
-        sys.stderr.write("command not recognized : %r\n" % (argv,))
-        sys.stderr.write(__doc__%{'arg0':sys.argv[0]})
-        return False
+        return None
 
 if __name__ == '__main__':
     ret = main(sys.argv)

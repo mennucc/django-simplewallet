@@ -14,8 +14,6 @@ from django.db import models, transaction
 from django import forms
 from django.core import signing
 
-from .models import Wallet, Transaction
-
 def encode_buying_function(function):
     return base64.b64encode(pickle.dumps(function)).decode()
 
@@ -61,6 +59,7 @@ def verify_purchase(form):
     return D
 
 def get_wallet_or_create(user):
+    from .models import Wallet, Transaction
     if isinstance(user, str):
         user = find_user(username=user)
     try:
@@ -94,6 +93,7 @@ def _wallet_helper_(functor, username=None, email=None, group=None):
     from django.db import transaction
     from django.contrib.contenttypes.models import ContentType
     from django.contrib.auth.models import Permission, Group
+    from .models import Wallet, Transaction
     #
     if not (username or email or group):
         logger.warning('Please specify (--username or --email) or (--group)')
