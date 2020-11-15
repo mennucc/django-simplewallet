@@ -5,6 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from django.core.exceptions import SuspiciousOperation
+import django.contrib.auth as django_auth
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
@@ -64,12 +65,24 @@ def get_wallet_or_create(user):
 
 ###################### wallet operation helper
 
+def find_user(username=None, email=None):
+    " find `User` matching `username` or `email` (or both, if both are given)"
+    assert (username or email)
+    UsMo = django_auth.get_user_model()
+    if isinstance(username, UsMo):
+        return username
+    if isinstance(email, UsMo):
+        return email
+    O = UsMo.objects
+    if username: O=O.filter(username=username)
+    if email: O=O.filter(email=email)
+    return O.get()
+
 def _wallet_helper_(functor, username=None, email=None, group=None):
     from django.db.utils import IntegrityError
     from django.db import transaction
     from django.contrib.contenttypes.models import ContentType
     from django.contrib.auth.models import Permission, Group
-    import django.contrib.auth as A
     #
     if not (username or email or group):
         logger.warning('Please specify (--username or --email) or (--group)')
@@ -81,13 +94,8 @@ def _wallet_helper_(functor, username=None, email=None, group=None):
     #
     content_type = ContentType.objects.get_for_model(Wallet)
     #
-    UsMo = A.get_user_model()
-    #
     if username or email:
-        O = UsMo.objects
-        if username: O=O.filter(username=username)
-        if email: O=O.filter(email=email)
-        user = O.get()
+        user = find_user(username=username, email=email)
         wallet = get_wallet_or_create(user)
         with transaction.atomic():
             functor(wallet)
