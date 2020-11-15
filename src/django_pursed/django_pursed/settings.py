@@ -105,7 +105,7 @@ if False:
     # to understand how to setup mysql for django;
     # but look at 'test_mysql.sql' for the exact list of commands to insert into mysql for this to work
     #
-    a = os.path.join(os.path.dirname(sys.argv[0]),'test_mysql.cnf')
+    a = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]),'test_mysql.cnf'))
     assert os.path.isfile(a),a
     #
     ## https://docs.djangoproject.com/en/dev/ref/databases/#mysql-notes
