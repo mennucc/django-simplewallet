@@ -20,6 +20,13 @@ def encode_buying_function(function):
     return base64.b64encode(pickle.dumps(function)).decode()
 
 def encode_purchase(purchase_amount, description, pickled_function, redirect_ok, redirect_fails):
+    if isinstance(purchase_amount, (int,float)):
+        purchase_amount = str(purchase_amount)
+    assert isinstance(purchase_amount,str)
+    assert isinstance(description,str)
+    assert isinstance(pickled_function,str)
+    assert isinstance(redirect_ok,str)
+    assert isinstance(redirect_fails,str)
     # convert to UNIX line ending
     description = re.sub("\r\n", '\n', description)
     #
