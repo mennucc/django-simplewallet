@@ -81,7 +81,7 @@ def create_fake_users():
     users_map = {}
     #
     UsMo = A.get_user_model()
-    for U,P in ('foobar', 'barfoo'), ('jsmith',"123456"), :
+    for U,P in ('foobar', 'barfoo'), ('jsmith',"123456"), ('rjoe','654321'):
         E=_build_fake_email(U)
         print('*** creating user %r password %r' % (U,P))
         try:
@@ -96,7 +96,7 @@ def create_fake_users():
     from wallet.models import Wallet, Transaction
     wallet_content_type = ContentType.objects.get_for_model(Wallet)
     transaction_content_type = ContentType.objects.get_for_model(Transaction)
-    for U in  'foobar', :
+    for U in  'foobar', 'jsmith':
         user = UsMo.objects.filter(username=U).get()
         print('*** adding permissions to user %r: "operate", "view_wallet" and "view_transaction"' % (U,))
         permission = Permission.objects.get(content_type = wallet_content_type,
