@@ -52,6 +52,8 @@ def verify_purchase(form):
     return D
 
 def get_wallet_or_create(user):
+    if isinstance(user, str):
+        user = find_user(username=user)
     try:
         wallet = Wallet.objects.filter(user=user).get()
     except Wallet.DoesNotExist:
