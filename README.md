@@ -53,6 +53,8 @@ there the user can be specified as `User` class, by username or by email;
 groups of users can be specified;
 and operations are protected by transactions.
 
+These functions can also be accessed from command line, using the `helper` script.
+
 ### Despositing a balance to a wallet
 
 ```python
