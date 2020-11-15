@@ -42,6 +42,17 @@ from wallet.models import Wallet
 wallet = user.wallet_set.create()
 ```
 
+### Operate
+
+The `wallet` model has three methods `deposit`, `withdraw` and `transfer`.
+These are low-level methods; in particular, they should be wrapped inside a transaction;
+see below for examples.
+
+There are also higher level functions by the same name in `wallet.utils` :
+there the user can be specified as `User` class, by username or by email;
+groups of users can be specified;
+and operations are protected by transactions.
+
 ### Despositing a balance to a wallet
 
 ```python
