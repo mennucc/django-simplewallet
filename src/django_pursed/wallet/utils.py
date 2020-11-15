@@ -16,6 +16,8 @@ from django.core import signing
 
 from .models import Wallet, Transaction
 
+def encode_buying_function(function):
+    return base64.b64encode(pickle.dumps(function)).decode()
 
 def encode_purchase(purchase_amount, description, pickled_function, redirect_ok, redirect_fails):
     # convert to UNIX line ending

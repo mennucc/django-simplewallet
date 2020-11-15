@@ -65,11 +65,11 @@ def buy(request):
         buyable.save()
         logger.warning('Creating BuyableObject %r',buyable)
     #
-    from wallet.views import encode_purchase
+    from wallet.views import encode_purchase, encode_buying_function
     purchase_amount = '20'
     description = "buy an object\n of this kind:\n" + description
     x = Buy(buyable=buyable, user=request.user)
-    pickled_function = base64.b64encode(pickle.dumps(x)).decode()
+    pickled_function = encode_buying_function(x)
     redirect_ok = django.urls.reverse('bought')+'?result=ok'
     redirect_fails =  django.urls.reverse('bought')+'?result=fail'
     encoded = encode_purchase(purchase_amount, description, pickled_function, redirect_ok, redirect_fails)
