@@ -135,7 +135,7 @@ def purchase(request):
     except StopPurchase as e:
         ret = str(e)
     except Exception as e:
-        logger.exception('While running buying function : %r',ex)
+        logger.exception('While running buying function : %r',e)
         ret = str(e)
     #
     if ret is True:
