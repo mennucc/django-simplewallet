@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.urls.exceptions import NoReverseMatch, Resolver404
 from django.conf import settings
 from django import forms
+from django.contrib import messages
 
 from .models import BuyableObject
 
@@ -31,14 +32,20 @@ class Buy(object):
         self.user = user
         self.buyable = buyable
     #
-    def __call__(self, *v,**k):
+    def check(self, *v,**k):
         if self.buyable.owners.filter(username=self.user.username).exists():
             raise StopPurchase( 'User %r already owns %r' % (self.user, self.buyable, ) )
+    #
+    def buy(self, *v,**k):
+        self.check()
         self.buyable.owners.add(self.user)
         D = { 'return_code' : True,
               'related_object' : self.buyable ,
         }
         return D
+    #
+    def __call__(self, *v,**k):
+        return self.buy(*v,**k)
 
 def buy(request):
     if not request.user.is_authenticated:
@@ -66,6 +73,20 @@ def buy(request):
     redirect_ok = django.urls.reverse('bought')+'?result=ok'
     redirect_fails =  django.urls.reverse('bought')+'?result=fail'
     encoded = encode_purchase(purchase_amount, description, pickled_function, redirect_ok, redirect_fails)
+    #
+    try:
+        x.check()
+    except StopPurchase as e:
+        a = 'Purchase stopped : %r' % (e,)
+        logger.warning(a)
+        messages.add_message(request,messages.WARNING, a)
+        return redirect(redirect_fails)
+    except Exception as e:
+        a = 'Purchase check failed : %r' % (e,)
+        messages.add_message(request,messages.ERROR, a)
+        logger.error(a)
+        return redirect(redirect_fails)
+    #
     #try:
     # in your web site you should use:
     return redirect(django.urls.reverse('wallet:authorize_purchase_url', kwargs={'encoded' : encoded}))
