@@ -9,6 +9,14 @@ This program does some actions that `manage` does not. Possible commands:
     deposit [--username username] [--email email] [--group group] [--amount amount]
         deposit `amount` to either an user (identified by `username` or `email`), or all users in a group
 
+    withdraw [--from-username username] [--from-email email]  [--amount amount]
+        withdraw `amount` from an user (identified by `from-username` or `from-email`)
+
+    transfer [--from-username username] [--from-email email] [--username username] [--email email] [--group group] [--amount amount]
+        transfer `amount` , from an user (identified by `from_username` or `from_email`) , to
+        either an user (identified by `username` or `email`), or all users in a group ; in this latter case
+        `amount` will be transferred once for each user in the group
+
     ping
         check if database is up and running
 
@@ -129,15 +137,21 @@ def main(argv):
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('command', help='specific command',nargs='+')
     #
-    if 'deposit' in argv:
+    if 'deposit' in argv or 'withdraw' in argv or 'transfer' in argv:
         parser.add_argument('--amount',type=float,required=True,\
-                            help='amount to deposit')
+                            help='amount')
+    if 'deposit' in argv or 'transfer' in argv:
         parser.add_argument('--username',type=str,\
                             help='username receiving the deposit')
         parser.add_argument('--email',type=str,\
                             help='email of user receiving the deposit')
         parser.add_argument('--group',type=str,\
                             help='group of users receiving the deposit')
+    if 'transfer' in argv or 'withdraw' in argv:
+        parser.add_argument('--from-username',type=str,\
+                            help='username to withdraw from')
+        parser.add_argument('--from-email',type=str,\
+                            help='email of user to withdraw from')
     #
     args = parser.parse_args()
     argv = args.command
@@ -152,6 +166,12 @@ def main(argv):
     elif argv[0] == 'deposit':
         from wallet.utils import deposit
         return deposit(args.amount, username=args.username, email=args.email, group=args.group)
+    elif argv[0] == 'transfer':
+        from wallet.utils import transfer
+        return transfer(args.amount, from_username=args.from_username, from_email=args.from_email, username=args.username, email=args.email, group=args.group)
+    elif argv[0] == 'withdraw':
+        from wallet.utils import withdraw
+        return withdraw(args.amount, from_username=args.from_username, from_email=args.from_email)
     else:
         sys.stderr.write("command not recognized : %r\n" % (argv,))
         sys.stderr.write(__doc__%{'arg0':sys.argv[0]})
