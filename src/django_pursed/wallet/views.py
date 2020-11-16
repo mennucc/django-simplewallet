@@ -31,7 +31,7 @@ currency_name_ = getattr(settings, 'WALLET_CURRENCY_NAME', 'coins')
 class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ['value', 'description']
+        fields = ['value', 'running_balance', 'description']
     at_time = forms.CharField()
 
 class PurchaseForm(forms.Form):
