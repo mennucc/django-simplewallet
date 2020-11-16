@@ -13,11 +13,22 @@
 
 <h2>Transactions</h2>
 {% if perms.wallet.view_transaction %}
- <ul>
+<table class="table table-bordered table-sm table-hover">
+<thead>
+ <tr>
+  {% for f in transaction_template %} 
+    <th scope="col">{{ f.label_tag }} {% if f.help_text %} ({{ f.help_text }}) {% endif %}</th>
+  {% endfor %}
+ </tr>
+ </thead>
+ <tbody>
  {% for val in transactions %}
- <li> <table class="border">{{ val }}</table> </li>
+  <tr>
+     {% for f in val %} <td class="text-right">{{ f.value }}</td>   {% endfor %}
+  </tr>
  {% endfor %}
- </ul>
+ </tbody>
+</table>
 {% else %}
 <div class="alert alert-warning" role="alert">Permission denied</div>
 {% endif %}

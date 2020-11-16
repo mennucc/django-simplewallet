@@ -61,9 +61,12 @@ def show(request):
     currency_name = currency_name_
     transactions = []
     if request.user.has_perm('wallet.view_transaction'):
+        t = None
         for j in Transaction.objects.filter(wallet=wallet).all():
-            t=TransactionForm(instance=j,initial={'at_time':str(j.created_at)})
+            t=TransactionForm(instance=j,initial={'at_time': j.created_at.strftime("%Y-%m-%d %H:%M:%S") })
             transactions.append(t)
+        transaction_template = TransactionForm()
+        del t
     return render(request, 'show.html', locals() )
 
 def authorize_purchase_url(request, encoded):
