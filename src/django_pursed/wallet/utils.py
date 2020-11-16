@@ -121,23 +121,31 @@ def _wallet_helper_(functor, username=None, email=None, group=None):
     return True
 
 
-def deposit(amount, username=None, email=None, group=None):
+def deposit(amount, username=None, email=None, group=None, description=None):
     "deposit `amount` to either an user (identified by `username` or `email`), or all users in a group"
+    #
+    if description is None: description='deposit from command line'
+    #
     def functor(wallet, *v, **k):
-        return wallet.deposit(value=amount, description='deposit from command line', *v, **k)
+        return wallet.deposit(value=amount, description=description, *v, **k)
     return _wallet_helper_(functor, username=username, email=email, group=group)
 
-def withdraw(amount, from_username=None, from_email=None):
+def withdraw(amount, from_username=None, from_email=None, description=None):
     "withdraw `amount` from an user (identified by `username` or `from_email`)"
+    #
+    if description is None: description='withdraw from command line'
+    #
     def functor(wallet, *v, **k):
-        return wallet.withdraw(value=amount, description='withdraw from command line', *v, **k)
+        return wallet.withdraw(value=amount, description=description, *v, **k)
     return _wallet_helper_(functor, username=from_username, email=from_email)
 
 
-def transfer(amount, from_username=None, from_email=None, username=None, email=None, group=None):
+def transfer(amount, from_username=None, from_email=None, username=None, email=None, group=None, description=None):
     """transfer `amount` , from an user (identified by `from_username` or `from_email`) , to
     either an user (identified by `username` or `email`), or all users in a group ; in this latter case
     `amount` will be transferred once for each user in the group """
+    #
+    if description is None: description='transfer from command line'
     #
     if not (from_username or from_email):
         logger.warning('Please specify (--from_username or --from_email)')
@@ -147,5 +155,5 @@ def transfer(amount, from_username=None, from_email=None, username=None, email=N
     from_wallet = get_wallet_or_create(from_user)
     #
     def functor(wallet, *v, **k):
-        return from_wallet.transfer(wallet=wallet, value=amount, description='transfer from command line', *v, **k)
+        return from_wallet.transfer(wallet=wallet, value=amount, description=description, *v, **k)
     return _wallet_helper_(functor, username=username, email=email, group=group)

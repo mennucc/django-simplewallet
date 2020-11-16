@@ -135,6 +135,8 @@ def parser_add_arguments(parser, argv):
     if 'deposit' in argv or 'withdraw' in argv or 'transfer' in argv:
         parser.add_argument('--amount',type=float,required=True,\
                             help='amount')
+        parser.add_argument('--description',type=str,\
+                            help='description of the operation')
     if 'deposit' in argv or 'transfer' in argv:
         parser.add_argument('--username',type=str,\
                             help='username receiving the deposit')
@@ -169,16 +171,20 @@ def main(argv):
 
 
 def main_call(utils, argv, args):
+    if not getattr(args,'description',False): args.description = None
+    #
     if argv[0] == 'create_fake_users':
         return create_fake_users()
     elif argv[0] == 'ping':
         return ping()
     elif argv[0] == 'deposit':
-        return utils.deposit(args.amount, username=args.username, email=args.email, group=args.group)
+        return utils.deposit(args.amount, username=args.username, email=args.email, group=args.group, description=args.description)
     elif argv[0] == 'transfer':
-        return utils.transfer(args.amount, from_username=args.from_username, from_email=args.from_email, username=args.username, email=args.email, group=args.group)
+        return utils.transfer(args.amount, from_username=args.from_username, from_email=args.from_email,
+                              description=args.description,
+                              username=args.username, email=args.email, group=args.group)
     elif argv[0] == 'withdraw':
-        return utils.withdraw(args.amount, from_username=args.from_username, from_email=args.from_email)
+        return utils.withdraw(args.amount, from_username=args.from_username, from_email=args.from_email, description=args.description)
     else:
         return None
 
