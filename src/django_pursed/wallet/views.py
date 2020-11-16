@@ -62,7 +62,7 @@ def show(request):
     transactions = []
     if request.user.has_perm('wallet.view_transaction'):
         t = None
-        for j in Transaction.objects.filter(wallet=wallet).all():
+        for j in Transaction.objects.filter(wallet=wallet).order_by('-created_at').all():
             t=TransactionForm(instance=j,initial={'at_time': j.created_at.strftime("%Y-%m-%d %H:%M:%S") })
             transactions.append(t)
         transaction_template = TransactionForm()
