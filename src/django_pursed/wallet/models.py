@@ -104,6 +104,12 @@ class Wallet(models.Model):
         T1 = self.withdraw(value, description, wallet)
         T2 = wallet.deposit(value, description, self)
         return T1,T2
+    
+    # https://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.get_absolute_url
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('wallet:show') + '?nr='+str(self.id)
+    #
 
 
 class Transaction(models.Model):
