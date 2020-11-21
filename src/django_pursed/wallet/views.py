@@ -44,6 +44,7 @@ class TransactionForm(forms.ModelForm):
         model = Transaction
         fields = ['value', 'running_balance', 'description']
     at_time = forms.CharField(help_text='Time of this transaction')
+    related = forms.CharField(help_text='Object related to this transaction')
 
 class PurchaseForm(forms.Form):
     purchase_amount = forms.CharField(help_text='Amount to be paid')
@@ -119,8 +120,35 @@ def show(request):
     if request.user.has_perm('wallet.view_transaction'):
         t = None
         for j in Transaction.objects.filter(wallet=wallet).order_by('-created_at').all():
-            t=TransactionForm(instance=j,initial={'at_time': j.created_at.strftime("%Y-%m-%d %H:%M:%S") })
+            url = ''
+            related = ''
+            try:
+                r = j.related_object
+                if r is None:
+                    related = ''
+                elif isinstance(r, Wallet):
+                    u = r.user
+                    if j.value > 0 :
+                        related = 'from user %s' % (u,)
+                    else:
+                        related = 'to user %s' % (u,)
+                    url = u.get_absolute_url()
+                else:
+                    related = str(r)
+                    if hasattr(r,'get_absolute_url'):
+                        url = r.get_absolute_url()
+            except Exception:
+                logger.exception('While parsing related_object for %r', j)
+            #if url:  related = ('<a href="%s">' % url) + related + '</a>'
+            t=TransactionForm(instance=j,initial={'at_time': j.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                                                  'related' : related,
+                                                  })
+            # fixme this is not propagated to the template
+            z = t.fields['related']
+            z.widget.url = url
+            #
             transactions.append(t)
+        #
         transaction_template = TransactionForm()
         del t
     return render(request, 'show.html', locals() )

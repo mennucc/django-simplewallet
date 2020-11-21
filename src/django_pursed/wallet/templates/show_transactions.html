@@ -15,9 +15,9 @@
         <tr>
             {% for f in val %}
                 <td class="text-right">
-                    {% if f.url %}<a href="{{ f.url }}">{% endif %}
+                    {% if f.widget.url %}<a href="{{ f.widget.url | safe }}">{% endif %}
                     {{ f.value }}
-                    {% if f.url %}</a>{% endif %}
+                    {% if f.widget.url %}</a>{% endif %}
                 </td>
             {% endfor %}
         </tr>
