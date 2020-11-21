@@ -11,6 +11,9 @@ from django.http import HttpResponse, QueryDict
 from django.db import models, transaction
 from django import forms
 from django.core import signing
+from django.contrib.auth import get_user_model
+
+UsMo = get_user_model()
 
 from .models import Wallet, Transaction
 
