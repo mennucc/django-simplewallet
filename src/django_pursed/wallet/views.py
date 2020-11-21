@@ -43,7 +43,7 @@ class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = ['value', 'running_balance', 'description']
-    at_time = forms.CharField()
+    at_time = forms.CharField(help_text='Time of this transaction')
 
 class PurchaseForm(forms.Form):
     purchase_amount = forms.CharField(help_text='Amount to be paid')

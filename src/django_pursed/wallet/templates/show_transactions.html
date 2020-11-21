@@ -2,7 +2,11 @@
 <thead>
     <tr>
         {% for f in transaction_template %} 
-            <th scope="col">{{ f.label_tag }} {% if f.help_text %} ({{ f.help_text }}) {% endif %}</th>
+         <th scope="col">
+          {% if f.help_text %} <span data-toggle="tooltip" title="{{ f.help_text }}"> {% endif %}
+            {{ f.label_tag }}
+          {% if f.help_text %} </span> {% endif %}
+        </th>
         {% endfor %}
     </tr>
     </thead>
