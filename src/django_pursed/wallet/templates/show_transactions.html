@@ -1,0 +1,22 @@
+<table class="table table-bordered table-sm table-hover">
+<thead>
+    <tr>
+        {% for f in transaction_template %} 
+            <th scope="col">{{ f.label_tag }} {% if f.help_text %} ({{ f.help_text }}) {% endif %}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for val in transactions %}
+        <tr>
+            {% for f in val %}
+                <td class="text-right">
+                    {% if f.url %}<a href="{{ f.url }}">{% endif %}
+                    {{ f.value }}
+                    {% if f.url %}</a>{% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

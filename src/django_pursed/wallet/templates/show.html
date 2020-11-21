@@ -11,24 +11,9 @@
 
 <div class="border">Your wallet currently contains {{ wallet.current_balance }} {{ currency_name }}.</div>
 
-<h2>Transactions</h2>
+<h2>Transactions for wallet {{ wallet.id }}</h2>
 {% if perms.wallet.view_transaction %}
-<table class="table table-bordered table-sm table-hover">
-<thead>
- <tr>
-  {% for f in transaction_template %} 
-    <th scope="col">{{ f.label_tag }} {% if f.help_text %} ({{ f.help_text }}) {% endif %}</th>
-  {% endfor %}
- </tr>
- </thead>
- <tbody>
- {% for val in transactions %}
-  <tr>
-     {% for f in val %} <td class="text-right">{{ f.value }}</td>   {% endfor %}
-  </tr>
- {% endfor %}
- </tbody>
-</table>
+{% include "show_transactions.html" %}
 {% else %}
 <div class="alert alert-warning" role="alert">Permission denied</div>
 {% endif %}
