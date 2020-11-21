@@ -1,4 +1,12 @@
-import sys, os, http, pickle, base64, copy
+import sys, os, http, pickle, base64, copy, re
+
+# taken from Django, for convenience
+slug_re = re.compile(r'^[-a-zA-Z0-9_]+\Z')
+number_re = re.compile(r'^[0-9]+\Z')
+
+from django.contrib.auth.validators import UnicodeUsernameValidator
+
+valid_user_re = UnicodeUsernameValidator().regex
 
 import logging
 logger = logging.getLogger(__name__)
