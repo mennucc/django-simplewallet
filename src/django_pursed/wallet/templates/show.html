@@ -5,11 +5,14 @@
 
 {% block content %}
 
-<h1>Your wallet</h1>
-
-<h2>Balance</h2>
-
-<div class="border">Your wallet currently contains {{ wallet.current_balance }} {{ currency_name }}.</div>
+<h1>{{whose}} wallets</h1>
+<ul>
+{% for w in wallets %}
+<li> <a href="{% url 'wallet:show' %}?nr={{w.id}}">
+   <span class="border">The wallet {{ w.id }} of user {{ w.user.username }} currently contains {{ w.current_balance }} {{ currency_name }}.</span>
+ </a>
+{% endfor %}
+</ul>
 
 <h2>Transactions for wallet {{ wallet.id }}</h2>
 {% if perms.wallet.view_transaction %}

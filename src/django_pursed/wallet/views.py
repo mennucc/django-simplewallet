@@ -68,7 +68,52 @@ def show(request):
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
     if not request.user.has_perm('wallet.view_wallet'):
         return HttpResponse('No viewing permission', status=http.HTTPStatus.BAD_REQUEST)
-    wallet = get_wallet_or_create(request.user)
+    nr = request.GET.get('nr')
+    if not ( nr is None or number_re.match(nr) ) : return (HttpResponse('Bad "nr"', status=http.HTTPStatus.BAD_REQUEST))
+    username = request.GET.get('username')
+    if not ( username is None or valid_user_re.match(username) ) : return (HttpResponse('Bad "username"', status=http.HTTPStatus.BAD_REQUEST))
+    thatuser = None
+    if username is not None and request.user.is_staff:
+        try:
+            thatuser = UsMo.objects.get(username=username)
+        except UsMo.DoesNotExist:
+            messages.add_message(request, messages.WARNING, '"username = %r" does not exist' % (username,))
+            wallet = None
+            transactions = []
+            thatuser = request.user
+            return render(request, 'show.html', locals() )
+    elif not request.user.is_staff:
+        if username:
+            messages.add_message(request, messages.WARNING, '"username" ignored')
+        thatuser = request.user
+        username = thatuser.username
+    # at this point (thatuser is None) if username was not provided and user is staff
+    if nr is not None:
+        try:
+            wallet = Wallet.objects.get(id = nr)
+        except Wallet.DoesNotExist:
+            messages.add_message(request, messages.WARNING, '"id = %r" does not exist' % (nr,))
+            wallet = None
+            transactions = []
+            thatuser = request.user
+            return render(request, 'show.html', locals() )
+        if request.user.is_staff:
+            if thatuser is None:
+                thatuser = wallet.user
+                username = thatuser.username
+            elif wallet.user != thatuser:
+                messages.add_message(request, messages.WARNING, 'wallet %d is not owned by user %r', nr, username)
+        elif wallet.user != request.user:
+            messages.add_message(request, messages.WARNING, '"nr" ignored')
+            wallet = get_wallet_or_create(request.user)
+    elif thatuser is not None:
+        wallet = get_wallet_or_create(thatuser)
+    else:
+        return HttpResponse("You must provide 'nr'",status=http.HTTPStatus.BAD_REQUEST)
+    #
+    whose =  (username + "'s") if (request.user.is_staff) else "Your"
+    wallets = list(Wallet.objects.filter(user=thatuser).all())
+    #
     currency_name = currency_name_
     transactions = []
     if request.user.has_perm('wallet.view_transaction'):
