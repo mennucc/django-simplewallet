@@ -77,46 +77,55 @@ def show(request):
     if not ( nr is None or number_re.match(nr) ) : return (HttpResponse('Bad "nr"', status=http.HTTPStatus.BAD_REQUEST))
     username = request.GET.get('username')
     if not ( username is None or valid_user_re.match(username) ) : return (HttpResponse('Bad "username"', status=http.HTTPStatus.BAD_REQUEST))
+    # only staff can specify username
+    if not request.user.is_staff:
+        if username:
+            logger.warning('User %s specified parameter username=%r :ignored ', request.user.username, username)
+        username = None
+    # set `thatuser`
     thatuser = None
-    if username is not None and request.user.is_staff:
+    if username:
         try:
             thatuser = UsMo.objects.get(username=username)
         except UsMo.DoesNotExist:
+            logger.warning('User %s specified parameter username=%r , non existent ', request.user.username, username)
             messages.add_message(request, messages.WARNING, '"username = %r" does not exist' % (username,))
             wallet = None
             transactions = []
+            wallets = []
             thatuser = request.user
             return render(request, 'show.html', locals() )
-    elif not request.user.is_staff:
-        if username:
-            messages.add_message(request, messages.WARNING, '"username" ignored')
+    else:
         thatuser = request.user
-        username = thatuser.username
-    # at this point (thatuser is None) if username was not provided and user is staff
+    # at this point `thatuser` is set to something sensible
+    #
     if nr is not None:
+        # `nr` takes precedence
         try:
             wallet = Wallet.objects.get(id = nr)
         except Wallet.DoesNotExist:
+            logger.warning('User %s specified parameter nr=%r , non existent ', request.user.username, nr)
             messages.add_message(request, messages.WARNING, '"id = %r" does not exist' % (nr,))
             wallet = None
             transactions = []
-            thatuser = request.user
+            wallets = list(Wallet.objects.filter(user=thatuser).all())
             return render(request, 'show.html', locals() )
-        if request.user.is_staff:
-            if thatuser is None:
+        if wallet.user != thatuser:
+            if request.user.is_staff:
+                if username:
+                    messages.add_message(request, messages.WARNING, '"username" ignored')
                 thatuser = wallet.user
-                username = thatuser.username
-            elif wallet.user != thatuser:
-                messages.add_message(request, messages.WARNING, 'wallet %d is not owned by user %r', nr, username)
-        elif wallet.user != request.user:
-            messages.add_message(request, messages.WARNING, '"nr" ignored')
-            wallet = get_wallet_or_create(request.user)
-    elif thatuser is not None:
-        wallet = get_wallet_or_create(thatuser)
+            else:
+                # this happens when a regular user tries to access the wallet of someone else
+                logger.warning('User %s specified wallet nr=%r owned by %r : ignored', request.user.username, nr, wallet.user.username)
+                messages.add_message(request, messages.WARNING, '"nr" ignored')
+                wallet = get_wallet_or_create(thatuser)
     else:
-        return HttpResponse("You must provide 'nr'",status=http.HTTPStatus.BAD_REQUEST)
+        wallet = get_wallet_or_create(thatuser)
     #
-    whose =  (username + "'s") if (request.user.is_staff) else "Your"
+    del username, nr
+    #
+    whose =  (thatuser.username + "'s") if (request.user.is_staff) else "Your"
     wallets = list(Wallet.objects.filter(user=thatuser).all())
     #
     transactions = []
