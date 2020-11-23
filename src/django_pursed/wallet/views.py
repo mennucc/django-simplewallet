@@ -65,10 +65,14 @@ from .utils import *
 ################### views
 
 def show(request):
+    " show wallet and transactions "
+    currency_name = currency_name_
+    #
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
     if not request.user.has_perm('wallet.view_wallet'):
         return HttpResponse('No viewing permission', status=http.HTTPStatus.BAD_REQUEST)
+    # GET
     nr = request.GET.get('nr')
     if not ( nr is None or number_re.match(nr) ) : return (HttpResponse('Bad "nr"', status=http.HTTPStatus.BAD_REQUEST))
     username = request.GET.get('username')
@@ -115,7 +119,6 @@ def show(request):
     whose =  (username + "'s") if (request.user.is_staff) else "Your"
     wallets = list(Wallet.objects.filter(user=thatuser).all())
     #
-    currency_name = currency_name_
     transactions = []
     if request.user.has_perm('wallet.view_transaction'):
         t = None
