@@ -5,7 +5,9 @@
 
 {% block content %}
 
-<h1>{{whose}} wallets</h1>
+<h1>
+{% if whose_url %}<a href="{{whose_url}}">{% endif %}{{whose}}{% if whose_url %}</a>{%endif%}
+</h1>
 <ul>
 {% for w in wallets %}
 <li> <a href="{% url 'wallet:show' %}?nr={{w.id}}">

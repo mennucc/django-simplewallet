@@ -125,7 +125,8 @@ def show(request):
     #
     del username, nr
     #
-    whose =  (thatuser.username + "'s") if (request.user.is_staff) else "Your"
+    whose =  ("%s's wallets" % thatuser) if (request.user.is_staff) else "Your wallets"
+    whose_url = thatuser.get_absolute_url()
     wallets = list(Wallet.objects.filter(user=thatuser).all())
     #
     transactions = []
