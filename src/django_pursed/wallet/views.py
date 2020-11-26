@@ -126,7 +126,7 @@ def show(request):
     del username, nr
     #
     whose =  ("%s's wallets" % thatuser) if (request.user.is_staff) else "Your wallets"
-    whose_url = thatuser.get_absolute_url()
+    whose_url = thatuser.get_absolute_url() if hasattr(thatuser,'get_absolute_url') else ''
     wallets = list(Wallet.objects.filter(user=thatuser).all())
     #
     transactions = []
@@ -145,7 +145,7 @@ def show(request):
                         related = 'from user %s' % (u,)
                     else:
                         related = 'to user %s' % (u,)
-                    url = u.get_absolute_url()
+                    url = u.get_absolute_url() if hasattr(u,'get_absolute_url') else ''
                 else:
                     related = str(r)
                     if hasattr(r,'get_absolute_url'):
