@@ -15,6 +15,12 @@ from .models import BuyableObject
 
 from wallet.errors import StopPurchase
 
+# you can specify a name for your currency
+currency_name_ = getattr(settings, 'WALLET_CURRENCY_NAME', 'coins')
+# you can specify an icon, or other html, for your currency
+currency_icon_ = getattr(settings, 'WALLET_CURRENCY_ICON', '&#164;')
+
+
 class ChooseForm(forms.Form):
     description = forms.CharField(label='description',
                                   max_length=300,
@@ -98,4 +104,6 @@ def bought(request):
     result = request.GET.get('result')
     from wallet.utils import  get_wallet_or_create
     wallet = get_wallet_or_create(request.user)
+    currency_name = currency_name_
+    currency_icon = currency_icon_
     return render(request, 'bought.html', locals())

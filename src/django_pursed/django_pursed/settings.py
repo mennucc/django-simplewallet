@@ -172,5 +172,12 @@ STATIC_URL = '/static/'
 ## name of currency
 # WALLET_CURRENCY_NAME = 'coins'
 
+### Name, or icon, of currency, as an html snippet, possibly with a link to further explanations.
+## The default is set to the "generic currency" unicode symbol, see https://en.wikipedia.org/wiki/Currency_sign_(typography)
+# WALLET_CURRENCY_ICON = '&#164;'
+## Example using bootstrap, see https://getbootstrap.com/docs/4.0/components/tooltips/ for more info
+## (if you want to test this, the javascript is already activated at the end of the `base.html` template)
+# WALLET_CURRENCY_ICON =  """<span data-toggle="tooltip" data-placement="top" title="coins">&#164;</span>"""
+
 ## if utils.get_wallet_or_create() will create a wallet for the user when the user hasn't it
 # WALLET_CREATE_WALLET = True

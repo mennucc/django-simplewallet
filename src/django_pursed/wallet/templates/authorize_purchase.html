@@ -5,7 +5,7 @@
 
 {% block content %}
 
-Your wallet currently contains {{ wallet.current_balance }} {{ currency_name }}.
+Your wallet currently contains {{ wallet.current_balance }} {{ currency_icon | safe }}.
 Do you authorize this expense?
 
 <form action="{% url 'wallet:purchase' %}" method="post">

@@ -36,6 +36,8 @@ CURRENCY_STORE_FIELD = getattr(settings,
 
 # you can specify a name for your currency
 currency_name_ = getattr(settings, 'WALLET_CURRENCY_NAME', 'coins')
+# you can specify an icon, or other html, for your currency
+currency_icon_ = getattr(settings, 'WALLET_CURRENCY_ICON', '&#164;')
 
 ########################## forms
 
@@ -67,6 +69,7 @@ from .utils import *
 def show(request):
     " show wallet and transactions "
     currency_name = currency_name_
+    currency_icon = currency_icon_
     #
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
@@ -172,6 +175,7 @@ def authorize_purchase_url(request, encoded):
     if not request.user.has_perm('wallet.operate'):
         raise SuspiciousOperation('Cannot operate on wallet')
     currency_name = currency_name_
+    currency_icon = currency_icon_
     wallet = get_wallet_or_create(request.user)
     purchase_amount, description, pickled_function, redirect_ok, redirect_fails =  signing.loads(encoded)
     D = purchase_as_dict(purchase_amount, description, pickled_function, redirect_ok, redirect_fails)
@@ -188,6 +192,7 @@ def authorize_purchase_post(request):
     if not request.user.has_perm('wallet.operate'):
         raise SuspiciousOperation('Cannot operate on wallet')
     currency_name = currency_name_
+    currency_icon = currency_icon_
     wallet = get_wallet_or_create(request.user)
     purchaseform = PurchaseForm(request.POST)
     if not purchaseform.is_valid():
@@ -202,6 +207,7 @@ def purchase(request):
     if not request.user.has_perm('wallet.operate'):
         raise SuspiciousOperation('Cannot operate on wallet')
     currency_name = currency_name_
+    currency_icon = currency_icon_
     purchaseform = PurchaseForm(request.POST)
     if not purchaseform.is_valid():
         raise SuspiciousOperation('Invalid form')

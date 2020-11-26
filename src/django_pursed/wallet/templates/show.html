@@ -11,7 +11,7 @@
 <ul>
 {% for w in wallets %}
 <li> <a href="{% url 'wallet:show' %}?nr={{w.id}}">
-   <span class="border">The wallet {{ w.id }} of user {{ w.user }} currently contains {{ w.current_balance }} {{ currency_name }}.</span>
+   <span class="border">The wallet {{ w.id }} of user {{ w.user }} currently contains {{ w.current_balance }} {{ currency_icon | safe }}.</span>
  </a>
 {% endfor %}
 </ul>
