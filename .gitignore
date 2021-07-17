@@ -1,3 +1,5 @@
 *.pyc
 db/
 *~
+src/django_pursed/www/static
+
