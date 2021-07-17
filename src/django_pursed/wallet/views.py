@@ -169,7 +169,11 @@ def show(request):
         del t
     return render(request, 'show.html', locals() )
 
+############## visualize the contract to the user for authorization, either received by post or by URL
+
+
 def authorize_purchase_url(request, encoded):
+    "the encoded contract is received as part of the URL"
     if request.method == 'POST' :
         raise SuspiciousOperation('Is POST')
     return authorize_purchase_from_encoded__(request, encoded)
@@ -200,6 +204,7 @@ def authorize_purchase_from_encoded__(request, encoded):
 
 
 def authorize_purchase_post(request):
+    "the contract was not encoded, all its fields are received inside a POST"
     if request.method != 'POST' :
         raise SuspiciousOperation('Is not POST')
     if not request.user.has_perm('wallet.operate'):
@@ -213,6 +218,8 @@ def authorize_purchase_post(request):
     for k in purchaseform.fields:
         purchaseform.fields[k].widget.attrs['readonly'] = True
     return render(request, 'authorize_purchase.html', locals() )
+
+############ effectively proceed with purchase
 
 def purchase(request):
     if request.method != 'POST' :
