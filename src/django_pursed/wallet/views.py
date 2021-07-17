@@ -172,6 +172,19 @@ def show(request):
 def authorize_purchase_url(request, encoded):
     if request.method == 'POST' :
         raise SuspiciousOperation('Is POST')
+    return authorize_purchase_from_encoded__(request, encoded)
+
+def authorize_purchase_encoded_post(request):
+    "the encoded contract is received inside a POST"
+    if request.method != 'POST' :
+        raise SuspiciousOperation('Is not POST')
+    if 'encoded' not in request.POST:
+        raise SuspiciousOperation('no encoded data in post')
+    encoded = request.POST.get('encoded')
+    return authorize_purchase_from_encoded__(request, encoded)
+
+def authorize_purchase_from_encoded__(request, encoded):
+    "common code to authorize_purchase_encoded_post() and authorize_purchase_url()"
     if not request.user.has_perm('wallet.operate'):
         raise SuspiciousOperation('Cannot operate on wallet')
     currency_name = currency_name_
