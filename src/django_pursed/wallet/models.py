@@ -20,6 +20,11 @@ CURRENCY_STORE_FIELD = getattr(settings,
 
 
 class Wallet(models.Model):
+    #
+    class Meta:
+        permissions = [('operate','permission to deposit/withdraw')]
+        app_label = 'wallet'
+    #
     # We should reference to the AUTH_USER_MODEL so that
     # when this module is used and a different User is used,
     # this would still work out of the box.
@@ -33,9 +38,6 @@ class Wallet(models.Model):
 
     # The date/time of the creation of this wallet.
     created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        permissions = [('operate','permission to deposit/withdraw')]
 
     def deposit(self, value, description='', related_object=None):
         """Deposits a value to the wallet.
@@ -113,6 +115,10 @@ class Wallet(models.Model):
 
 
 class Transaction(models.Model):
+    #
+    class Meta:
+        app_label = 'wallet'
+    #
     # The wallet that holds this transaction.
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
 
