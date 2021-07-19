@@ -6,17 +6,6 @@ This program does some actions that `manage` does not. Possible commands:
     create_fake_users
         creates some fake users, to interact with the Django site
 
-    deposit [--username username] [--email email] [--group group] [--amount amount]
-        deposit `amount` to either an user (identified by `username` or `email`), or all users in a group
-
-    withdraw [--from-username username] [--from-email email]  [--amount amount]
-        withdraw `amount` from an user (identified by `from-username` or `from-email`)
-
-    transfer [--from-username username] [--from-email email] [--username username] [--email email] [--group group] [--amount amount]
-        transfer `amount` , from an user (identified by `from_username` or `from_email`) , to
-        either an user (identified by `username` or `email`), or all users in a group ; in this latter case
-        `amount` will be transferred once for each user in the group
-
     ping
         check if database is up and running
 
@@ -132,24 +121,7 @@ def create_fake_users():
 
 
 def parser_add_arguments(parser, argv):
-    if 'deposit' in argv or 'withdraw' in argv or 'transfer' in argv:
-        parser.add_argument('--amount',type=float,required=True,\
-                            help='amount')
-        parser.add_argument('--description',type=str,\
-                            help='description of the operation')
-    if 'deposit' in argv or 'transfer' in argv:
-        parser.add_argument('--username',type=str,\
-                            help='username receiving the deposit')
-        parser.add_argument('--email',type=str,\
-                            help='email of user receiving the deposit')
-        parser.add_argument('--group',type=str,\
-                            help='group of users receiving the deposit')
-    if 'transfer' in argv or 'withdraw' in argv:
-        parser.add_argument('--from-username',type=str,\
-                            help='username to withdraw from')
-        parser.add_argument('--from-email',type=str,\
-                            help='email of user to withdraw from')
-
+    pass
 
 def main(argv):
     parser = argparse.ArgumentParser(description=__doc__,
@@ -177,14 +149,6 @@ def main_call(utils, argv, args):
         return create_fake_users()
     elif argv[0] == 'ping':
         return ping()
-    elif argv[0] == 'deposit':
-        return utils.deposit(args.amount, username=args.username, email=args.email, group=args.group, description=args.description)
-    elif argv[0] == 'transfer':
-        return utils.transfer(args.amount, from_username=args.from_username, from_email=args.from_email,
-                              description=args.description,
-                              username=args.username, email=args.email, group=args.group)
-    elif argv[0] == 'withdraw':
-        return utils.withdraw(args.amount, from_username=args.from_username, from_email=args.from_email, description=args.description)
     else:
         return None
 
