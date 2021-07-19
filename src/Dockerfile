@@ -1,9 +1,10 @@
 FROM python:3
 ENV PYTHONUNBUFFERED=1
-RUN mkdir /src
 WORKDIR /src
-COPY . /src/
+ADD ./requirements.txt /src/requirements.txt
 RUN pip3 install -r requirements.txt
+COPY . /src/
+
 
 
 
