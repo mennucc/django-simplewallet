@@ -6,6 +6,9 @@ while ! python3 django_pursed/helper.py ping ; do
 done
 
 echo Running migrations
+echo ======================================================== Running tests
+( cd django_pursed ;  ./manage.py test )
+echo ======================================================== End of tests
 python3 django_pursed/manage.py migrate
 echo Creating users
 python3 django_pursed/helper.py create_fake_users
