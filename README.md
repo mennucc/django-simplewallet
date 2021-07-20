@@ -3,6 +3,8 @@ django-simplewallet
 
 A simple wallet django app.
 
+This project is compatible with Python 3 and Django 3 (tested up to Django 3.2).
+
 ### Running
 
 The project contains a portal called `toystore` that
@@ -27,6 +29,17 @@ $ docker-compose up
 Connect to `localhost:8000` , authenticate with username `foobar` and password `barfoo`,
 and buy an object.
 
+### Testing
+
+The code can also be started using the familiar `./manage.py runserver` : this will
+use a sqlite database for convenience.
+
+The project contains tests, but some fail with sqlite; whereas they work fine with
+mysql.
+
+To properly test the code, just start the docker container: all tests are run prior to
+starting the server.
+
 ### Structure
 
 The project is divided in two apps. The most important is `wallet` that manages wallets.
@@ -36,7 +49,7 @@ its code can be used and adapted to your needs.
 ### Creating a New Wallet
 
 A wallet is owned by a user. Should you be using a custom
-user model, the wallet should still work properly as it
+user model, the wallet should still work properly as
 the wallet points to `settings.AUTH_USER_MODEL`.
 
 ```python
@@ -67,7 +80,7 @@ To transfer between wallets, both the sending and receiving user must have `oper
 permission.
 
 
-### Despositing a balance to a wallet
+### Depositing a balance to a wallet
 
 ```python
 from django.db import transaction
@@ -142,3 +155,10 @@ CURRENCY_STORE_FIELD = models.DecimalField(max_digits=10, decimal_places=2)
 ```
 
 You need to run `./manage.py makemigrations` after that.
+
+===
+History
+
+This project is a fork of
+https://github.com/thejpanganiban/django-pursed
+by Jesse Panganiban
