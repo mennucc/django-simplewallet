@@ -53,7 +53,9 @@ class Buy(object):
     def __call__(self, *v,**k):
         return self.buy(*v,**k)
 
+
 def buy(request):
+    " a simple view that accepts a form ChooseForm or a parameter, and starts a contract "
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
     #
@@ -64,21 +66,12 @@ def buy(request):
         if not chooseform.is_valid():
             raise SuspiciousOperation('Invalid form')
         description = chooseform.cleaned_data['description']
-    try:
-        buyable = BuyableObject.objects.filter(description = description).get()
-    except BuyableObject.DoesNotExist:
-        buyable = BuyableObject(description = description)
-        buyable.save()
-        logger.warning('Creating BuyableObject %r',buyable)
     #
-    from wallet.views import encode_purchase, encode_buying_function
     purchase_amount = '20'
-    description = "buy an object\n of this kind:\n" + description
-    x = Buy(buyable=buyable, user=request.user)
-    pickled_function = encode_buying_function(x)
+    encoded, x = prepare_contract(description, purchase_amount, request.user)
+    #
     redirect_ok = django.urls.reverse('bought')+'?result=ok'
     redirect_fails =  django.urls.reverse('bought')+'?result=fail'
-    encoded = encode_purchase(purchase_amount, description, pickled_function, redirect_ok, redirect_fails)
     #
     try:
         x.check()
@@ -93,12 +86,28 @@ def buy(request):
         logger.error(a)
         return redirect(redirect_fails)
     #
-    #try:
-    # in your web site you should use:
     return redirect(django.urls.reverse('wallet:authorize_purchase_url', kwargs={'encoded' : encoded}))
-    #except NoReverseMatch:
-    #    logger.error('Could not resolve wallet:authorize_purchase_url ')
-    #    return redirect('/wallet/authorize_purchase_url/' + encoded)
+
+def prepare_contract(description, purchase_amount, user):
+    " prepare an encoded contract to buy this object "
+    try:
+        buyable = BuyableObject.objects.filter(description = description).get()
+    except BuyableObject.DoesNotExist:
+        buyable = BuyableObject(description = description)
+        buyable.save()
+        logger.warning('Creating BuyableObject %r',buyable)
+    #
+    from wallet.views import encode_purchase, encode_buying_function
+    #
+    description = "buy an object\n of this kind:\n" + description
+    #
+    x = Buy(buyable=buyable, user=user)
+    pickled_function = encode_buying_function(x)
+    redirect_ok = django.urls.reverse('bought')+'?result=ok'
+    redirect_fails =  django.urls.reverse('bought')+'?result=fail'
+    encoded = encode_purchase(purchase_amount, description, pickled_function, redirect_ok, redirect_fails)
+    #
+    return encoded, x
 
 def bought(request):
     result = request.GET.get('result')
