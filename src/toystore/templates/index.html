@@ -7,8 +7,9 @@
 
 <h1>Django-simplewallet : toystore test pages</h1>
 
+{% if user.is_authenticated %}
 <h2>Buy</h2>
-
+<h3>Buy with intermediate form and redirect </h3>
 {% if chooseform %}
 <form action="{% url 'buy' %}" method="post" class="border">
     {% csrf_token %}
@@ -17,6 +18,26 @@
     </table>
     <input type="submit" value="Buy">
 </form>
+{% endif %}
+<h3>Buy with link </h3>
+<ul>
+{% for descr,contr in buyables %}
+  <li> <a href="{% url 'wallet:authorize_purchase_url' contr %}"
+          class="btn btn-outline-primary">Buy: {{ descr }}</a> </li>
+{% endfor %}
+</ul>
+<h3>Buy with form</h3>
+<ul>
+{% for descr,contr in buyables %}
+  <li> 
+  <form action="{% url 'wallet:authorize_purchase_encoded_post' %}" method="post" class="btn btn-outline-primary">
+    {% csrf_token %}
+        <input type="hidden" name="encoded" value="{{ contr }}" id="id_encoded">
+        <input type="submit"  value="Buy: {{ descr }}"  class="btn">
+  </form>
+ </li>
+{% endfor %}
+</ul>
 {% else %}
 <a href="{% url 'my_login' %}?next=/" class="btn btn-outline-primary btn-sm">
   Please login.

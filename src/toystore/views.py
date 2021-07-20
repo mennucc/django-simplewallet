@@ -20,6 +20,8 @@ currency_name_ = getattr(settings, 'WALLET_CURRENCY_NAME', 'coins')
 # you can specify an icon, or other html, for your currency
 currency_icon_ = getattr(settings, 'WALLET_CURRENCY_ICON', '&#164;')
 
+buyable_objects = (('car',30),('doll',20),('ball',5),('train',40))
+
 
 class ChooseForm(forms.Form):
     description = forms.CharField(label='description',
@@ -28,9 +30,13 @@ class ChooseForm(forms.Form):
 
 def index(request):
     if not request.user.is_authenticated:
-        chooseform = None
+        chooseform = buyables = None
     else:
         chooseform = ChooseForm()
+        buyables = []
+        for description,purchase_amount in buyable_objects:
+            encoded, x = prepare_contract(description, purchase_amount, request.user)
+            buyables.append((description, encoded))
     return render(request, 'index.html', locals())
 
 class Buy(object):
@@ -72,7 +78,7 @@ def buy(request):
     #
     redirect_ok = django.urls.reverse('bought')+'?result=ok'
     redirect_fails =  django.urls.reverse('bought')+'?result=fail'
-    #
+    # checks that this object can be bought, just in case
     try:
         x.check()
     except StopPurchase as e:
