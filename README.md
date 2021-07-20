@@ -1,11 +1,15 @@
-django-pursed
+django-simplewallet
 ===
 
 A simple wallet django app.
 
 ### Running
 
+The project contains a portal called `toystore` that
+demoes the `wallet` app.
+
 Install docker and docker-compose.
+Use your distribution package manager, or
 
 ```shell
 $ curl -sSL https://get.docker.com
@@ -26,7 +30,7 @@ and buy an object.
 ### Structure
 
 The project is divided in two apps. The most important is `wallet` that manages wallets.
-The app `django_pursed` implements a simple shop where the user can buy objects;
+The app `toystore` implements a simple shop where the user can buy objects;
 its code can be used and adapted to your needs.
 
 ### Creating a New Wallet

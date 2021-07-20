@@ -131,7 +131,7 @@ def main(argv):
     args = parser.parse_args()
     argv = args.command
     #
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_pursed.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'toystore.settings')
     import django
     django.setup()
     from wallet import utils

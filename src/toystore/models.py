@@ -7,7 +7,7 @@ AUTH_USER_MODEL = settings.AUTH_USER_MODEL
 
 class BuyableObject(models.Model):
     class Meta:
-        app_label = 'django_pursed'
+        app_label = 'toystore'
     #
     description = models.CharField(max_length=300, db_index = True, blank=True)
     #

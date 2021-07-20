@@ -1,4 +1,4 @@
-"""django_pursed URL Configuration
+"""toystore URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.9/topics/http/urls/
@@ -20,7 +20,7 @@ from django.contrib import admin
 
 from .views import index, buy, bought
 
-app_name = 'django_pursed'
+app_name = 'toystore'
 
 urlpatterns = [
     path('admin/', admin.site.urls),

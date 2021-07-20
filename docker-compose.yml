@@ -20,7 +20,7 @@ services:
     depends_on:
       - mysql
     build: src/
-    image: djangopursed
+    image: djangosimplewallet
     working_dir: /src
     volumes:
       - mysql5_run:/var/run/mysql
