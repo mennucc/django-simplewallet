@@ -3,7 +3,16 @@ django-simplewallet
 
 A simple wallet django app.
 
+### Compatibility
+
 This project is compatible with Python 3 and Django 3 (tested up to Django 3.2).
+
+### Structure
+
+The project is divided in two apps. The most important is `wallet` that manages wallets.
+
+The app `toystore` implements a simple shop where the user can buy objects;
+its code can be used and adapted to your needs.
 
 ### Running
 
@@ -31,7 +40,7 @@ and buy an object.
 
 ### Testing
 
-The code can also be started using the familiar `./manage.py runserver` : this will
+The `toystore` portal can also be started using the familiar `./manage.py runserver` : this will
 use a sqlite database for convenience.
 
 The project contains tests, but some fail with sqlite; whereas they work fine with
@@ -40,11 +49,22 @@ mysql.
 To properly test the code, just start the docker container: all tests are run prior to
 starting the server.
 
-### Structure
+### Installing the app
 
-The project is divided in two apps. The most important is `wallet` that manages wallets.
-The app `toystore` implements a simple shop where the user can buy objects;
-its code can be used and adapted to your needs.
+There is no provision to install this app: just symlink the directory `src/wallet` 
+into the root of your Django project; then add
+it to the `INSTALLED_APPS` in `settings.py`
+
+```python
+INSTALLED_APPS += [ 'wallet', ]
+```
+
+and add its urls into the main `urls.py`
+
+```python
+urlpatterns += [ path('wallet/', include('wallet.urls')),]
+```
+
 
 ### Creating a New Wallet
 
@@ -137,8 +157,21 @@ with transaction.atomic():
     wallet.transfer(transfer_to_wallet, 100)
 ```
 
-CURRENCY_STORE_FIELD
----
+### Buying contracts
+
+The app can prepare a `contract` for the user, that can then accept the terms (and pay) or refuse.
+
+This contract contains all relevant informations; in particular, it contains an
+instance of a function that, upon payment, performs
+all needed operations to finalize.
+
+The contract is encoded, and passed to user's browser, either in the URL, or in  a form;
+the first method though may fail sometimes (e.g. some versions of Apache and WSGI silently
+fail on long URLs).
+
+The workflow is simple, look into `toystore/views.py`.
+
+### CURRENCY_STORE_FIELD
 
 The `CURRENCY_STORE_FIELD` is a django field class that
 contains how the fields should be stored. By default,
@@ -156,8 +189,8 @@ CURRENCY_STORE_FIELD = models.DecimalField(max_digits=10, decimal_places=2)
 
 You need to run `./manage.py makemigrations` after that.
 
-===
 History
+===
 
 This project is a fork of
 https://github.com/thejpanganiban/django-pursed
