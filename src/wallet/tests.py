@@ -132,11 +132,14 @@ class OperationsTestCase(UsersTestCase):
     
     def test_operations_arguments(self):
         from wallet.utils import deposit, transfer, withdraw
-        R = transfer(amount=14)
+        with self.assertLogs() as cm:
+            R = transfer(amount=14)
         self.assertEqual(R, False)
-        R = deposit(amount=14)
+        with self.assertLogs() as cm:
+            R = deposit(amount=14)
         self.assertEqual(R, False)
-        R = withdraw(amount=14)
+        with self.assertLogs() as cm:
+            R = withdraw(amount=14)
         self.assertEqual(R, False)
         
     def test_operations(self):
