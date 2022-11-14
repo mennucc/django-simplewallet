@@ -43,8 +43,7 @@ class DepositTestCase(WalletTestCase):
 class WithdrawTestCase(WalletTestCase):
 
     def test_withdraw(self):
-        """Test the basic wallet withdraw operation on a
-        wallet that has an initial balance."""
+        "Test the basic wallet withdraw operation on a wallet that has an initial balance."
         INITIAL_BALANCE = 100
         self._create_initial_balance(INITIAL_BALANCE)
 
@@ -63,9 +62,7 @@ class WithdrawTestCase(WalletTestCase):
         self.assertEqual(self.wallet.transaction_set.last().value, -WITHDRAW)
 
     def test_no_balance_withdraw(self):
-        """Test the basic wallet withdraw operation on a
-        wallet without any transaction.
-        """
+        "Test the basic wallet withdraw operation on a  wallet without any transaction."
         with self.assertRaises(InsufficientBalance):
             self.wallet.withdraw(100)
 
@@ -143,8 +140,7 @@ class OperationsTestCase(UsersTestCase):
         self.assertEqual(R, False)
         
     def test_operations(self):
-        """Test the basic wallet withdraw operation on a
-        wallet that has an initial balance."""
+        "Test the basic wallet withdraw operation on a wallet that has an initial balance."
         from wallet.utils import deposit, transfer, withdraw
         #
         logger.info('Deposit to foobar')

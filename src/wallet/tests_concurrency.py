@@ -81,9 +81,7 @@ class ConcurrentDepositTestCase(WalletTestCase):
         self.assertEqual(wallet.transaction_set.count(), 3)
 
     def test_multiple_withdraw_insufficient_balance(self):
-        """We're going to test two concurrent withdraw
-        transactions happening in parallel where one would
-        end-up with an insufficient balance."""
+        "We're going to test two concurrent withdraw transactions happening in parallel where one would end-up with an insufficient balance."
         INITIAL_BALANCE = 199
         self._create_initial_balance(INITIAL_BALANCE)
         WITHDRAW = 100
@@ -123,8 +121,7 @@ class ConcurrentDepositTestCase(WalletTestCase):
 class ConcurrentTransferTestCase(WalletTestCase):
 
     def test_transfer(self):
-        """We're going to simulate concurrent transfer to a
-        single wallet."""
+        "We're going to simulate concurrent transfer to a  single wallet."
         INITIAL_BALANCE = 200
         self._create_initial_balance(INITIAL_BALANCE)
         TRANSFER = 100
