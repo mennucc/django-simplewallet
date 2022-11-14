@@ -1,6 +1,7 @@
 from django.db import transaction
 from .models import Wallet
 from .test_utils import WalletTestCase
+from .errors import InsufficientBalance
 import threading
 import time
 
@@ -50,16 +51,21 @@ class ConcurrentDepositTestCase(WalletTestCase):
         self._create_initial_balance(INITIAL_BALANCE)
         WITHDRAW = 100
 
+        exception_count = []
         def withdraw_thread():
-            with transaction.atomic():
-                wallet = Wallet.objects.select_for_update().get(
-                        pk=self.wallet.id)
-                wallet.withdraw(WITHDRAW)
+            try:
+                with transaction.atomic():
+                    wallet = Wallet.objects.select_for_update().get(
+                            pk=self.wallet.id)
+                    wallet.withdraw(WITHDRAW)
 
-                # We simulate a long transaction so that
-                # when the other thread comes in, this
-                # thread still holds the lock.
-                time.sleep(1)
+                    # We simulate a long transaction so that
+                    # when the other thread comes in, this
+                    # thread still holds the lock.
+                    time.sleep(1)
+            except InsufficientBalance as e:
+                exception_count.append(e)
+                
 
         t1 = threading.Thread(target=withdraw_thread)
         t2 = threading.Thread(target=withdraw_thread)
@@ -68,6 +74,8 @@ class ConcurrentDepositTestCase(WalletTestCase):
         t1.join()
         t2.join()
 
+        self.assertEqual(len(exception_count), 0)
+        
         wallet = Wallet.objects.get(pk=self.wallet.id)
 
         # Assert that both transactions were able to
@@ -86,16 +94,20 @@ class ConcurrentDepositTestCase(WalletTestCase):
         self._create_initial_balance(INITIAL_BALANCE)
         WITHDRAW = 100
 
+        exception_count = []
         def withdraw_thread():
-            with transaction.atomic():
-                wallet = Wallet.objects.select_for_update().get(
-                        pk=self.wallet.id)
-                wallet.withdraw(WITHDRAW)
+            try:
+                with transaction.atomic():
+                    wallet = Wallet.objects.select_for_update().get(
+                            pk=self.wallet.id)
+                    wallet.withdraw(WITHDRAW)
 
-                # We simulate a long transaction so that
-                # when the other thread comes in, this
-                # thread still holds the lock.
-                time.sleep(1)
+                    # We simulate a long transaction so that
+                    # when the other thread comes in, this
+                    # thread still holds the lock.
+                    time.sleep(1)
+            except InsufficientBalance as e:
+                exception_count.append(e)
 
         t1 = threading.Thread(target=withdraw_thread)
         t2 = threading.Thread(target=withdraw_thread)
@@ -104,6 +116,8 @@ class ConcurrentDepositTestCase(WalletTestCase):
         t1.join()
         t2.join()
 
+        self.assertEqual(len(exception_count), 1)
+        
         wallet = Wallet.objects.get(pk=self.wallet.id)
 
         # Assert that the only the first transaction was
