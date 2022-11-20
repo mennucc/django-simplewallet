@@ -16,6 +16,29 @@ its code can be used and adapted to your needs.
 
 ### Running
 
+Install django. Then, at least once, run
+
+```shell
+$ cd src
+$ python3 ./manage.py migrate
+$ python3 ./helper.py create_fake_users
+# python3 ./manage.py deposit --username=foobar --amount=100
+```
+
+then
+
+```shell
+$ python3 ./manage.py runserver
+```
+
+this will use a sqlite database for convenience.
+
+Connect to `localhost:8000` , authenticate with username `foobar` and password `barfoo`,
+and buy an object.
+
+
+### Running with docker
+
 The project contains a portal called `toystore` that
 demoes the `wallet` app.
 
@@ -38,10 +61,8 @@ $ docker-compose up
 Connect to `localhost:8000` , authenticate with username `foobar` and password `barfoo`,
 and buy an object.
 
-### Testing
 
-The `toystore` portal can also be started using the familiar `./manage.py runserver` : this will
-use a sqlite database for convenience.
+### Testing
 
 The project contains tests, but some fail with sqlite; whereas they work fine with
 mysql.
